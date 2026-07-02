@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nick Meyer | Portfolio Dashboard</title>
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" href="/assets/styles.css?v=29">
+  </head>
+  <body class="dashboard-page">
+    <main class="dashboard-shell">
+      <section class="dashboard-panel login-panel" id="loginPanel">
+        <p class="dashboard-label">Dashboard</p>
+        <h1>Portfolio login</h1>
+        <p class="dashboard-copy">Sign in with the email and password you create in Supabase Auth.</p>
+        <form class="dashboard-form" id="loginForm">
+          <label>
+            Email
+            <input type="email" name="email" autocomplete="email" required>
+          </label>
+          <label>
+            Password
+            <input type="password" name="password" autocomplete="current-password" required>
+          </label>
+          <button type="submit">Log In</button>
+          <p class="form-message" id="loginMessage" role="status"></p>
+        </form>
+      </section>
+
+      <section class="dashboard-panel admin-panel is-hidden" id="adminPanel">
+        <div class="dashboard-topbar">
+          <div>
+            <p class="dashboard-label">UGC Work</p>
+            <h1>Add new work</h1>
+          </div>
+          <button class="ghost-button" id="logoutButton" type="button">Log Out</button>
+        </div>
+
+        <div class="dashboard-grid">
+          <form class="dashboard-form upload-form dashboard-card" id="workForm">
+            <h2>Upload portfolio work</h2>
+            <label>
+              Type
+              <select name="type" required>
+                <option value="photo">Photo</option>
+                <option value="video">Video</option>
+              </select>
+            </label>
+            <label>
+              Brand / Client
+              <input type="text" name="brand" placeholder="Radisson Hotel Group" required>
+            </label>
+            <label>
+              Work Needed
+              <input type="text" name="title" placeholder="Hotel lifestyle photography" required>
+            </label>
+            <label>
+              Brief Notes
+              <textarea name="brief" rows="4" placeholder="Short context, deliverables or campaign notes"></textarea>
+            </label>
+            <label>
+              Display Order
+              <input type="number" name="sort_order" value="0">
+            </label>
+            <label>
+              Upload File
+              <input type="file" name="file" accept="image/*,video/*" required>
+            </label>
+            <button type="submit">Upload Work</button>
+            <p class="form-message" id="uploadMessage" role="status"></p>
+          </form>
+
+          <form class="dashboard-form password-form dashboard-card" id="passwordForm">
+            <h2>Change password</h2>
+            <p>Update the password for the account currently logged in to this dashboard.</p>
+            <label>
+              New Password
+              <input type="password" name="password" autocomplete="new-password" minlength="8" required>
+            </label>
+            <label>
+              Confirm Password
+              <input type="password" name="confirm_password" autocomplete="new-password" minlength="8" required>
+            </label>
+            <button type="submit">Update Password</button>
+            <p class="form-message" id="passwordMessage" role="status"></p>
+          </form>
+        </div>
+
+        <div class="dashboard-list" id="workList" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <script type="module" src="/assets/admin.js?v=29"></script>
+  </body>
+</html>
