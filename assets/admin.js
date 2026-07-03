@@ -11,6 +11,65 @@ const passwordMessage = document.querySelector("#passwordMessage");
 const logoutButton = document.querySelector("#logoutButton");
 const workList = document.querySelector("#workList");
 
+const starterWork = [
+  {
+    type: "photo",
+    brand: "Travel",
+    title: "Mountain coffee moment",
+    brief: "Starter photography item. Rearrange, delete, or replace it when your next project is ready.",
+    file_path: "starter/mountain-coffee.jpg",
+    file_url: "/starter/mountain-coffee.jpg",
+    sort_order: 10
+  },
+  {
+    type: "photo",
+    brand: "Hospitality",
+    title: "Spa lifestyle",
+    brief: "Starter photography item. Rearrange, delete, or replace it when your next project is ready.",
+    file_path: "starter/spa-coffee.jpg",
+    file_url: "/starter/spa-coffee.jpg",
+    sort_order: 20
+  },
+  {
+    type: "photo",
+    brand: "Food & Drink",
+    title: "Cocktail serve",
+    brief: "Starter photography item. Rearrange, delete, or replace it when your next project is ready.",
+    file_path: "starter/cocktail-garnish.jpg",
+    file_url: "/starter/cocktail-garnish.jpg",
+    sort_order: 30
+  },
+  {
+    type: "photo",
+    brand: "Brand",
+    title: "Coastal product moment",
+    brief: "Starter photography item. Rearrange, delete, or replace it when your next project is ready.",
+    file_path: "starter/stellenbrau-coast.jpg",
+    file_url: "/starter/stellenbrau-coast.jpg",
+    sort_order: 40
+  },
+  {
+    type: "photo",
+    brand: "Food",
+    title: "Restaurant detail",
+    brief: "Starter photography item. Rearrange, delete, or replace it when your next project is ready.",
+    file_path: "starter/food-salad.jpg",
+    file_url: "/starter/food-salad.jpg",
+    sort_order: 50
+  },
+  {
+    type: "photo",
+    brand: "Travel",
+    title: "Cave discovery",
+    brief: "Starter photography item. Rearrange, delete, or replace it when your next project is ready.",
+    file_path: "starter/cave-silhouette.jpg",
+    file_url: "/starter/cave-silhouette.jpg",
+    sort_order: 60
+  }
+];
+
+let currentWork = [];
+
 function setMessage(element, message, isError = false) {
   element.textContent = message;
   element.classList.toggle("is-error", isError);
@@ -47,14 +106,51 @@ function renderWorkItem(item) {
   const brief = document.createElement("p");
   brief.textContent = item.brief || "No brief notes added.";
 
+  const actions = document.createElement("div");
+  actions.className = "dashboard-actions";
+
+  const moveUpButton = document.createElement("button");
+  moveUpButton.type = "button";
+  moveUpButton.textContent = "Move Up";
+  moveUpButton.disabled = currentWork.indexOf(item) === 0;
+  moveUpButton.addEventListener("click", () => moveWork(item, -1));
+
+  const moveDownButton = document.createElement("button");
+  moveDownButton.type = "button";
+  moveDownButton.textContent = "Move Down";
+  moveDownButton.disabled = currentWork.indexOf(item) === currentWork.length - 1;
+  moveDownButton.addEventListener("click", () => moveWork(item, 1));
+
   const deleteButton = document.createElement("button");
   deleteButton.type = "button";
   deleteButton.textContent = "Delete";
   deleteButton.addEventListener("click", () => deleteWork(item));
 
-  details.append(title, meta, brief, deleteButton);
+  actions.append(moveUpButton, moveDownButton, deleteButton);
+  details.append(title, meta, brief, actions);
   article.append(preview, details);
   return article;
+}
+
+async function seedStarterWork() {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const userId = sessionData.session?.user?.id;
+  if (!userId) return false;
+
+  const { error } = await supabase.from("portfolio_work").insert(
+    starterWork.map((item) => ({
+      ...item,
+      user_id: userId
+    }))
+  );
+
+  if (error) {
+    setMessage(uploadMessage, error.message, true);
+    return false;
+  }
+
+  setMessage(uploadMessage, "Starter photography items added. You can rearrange or replace them.");
+  return true;
 }
 
 async function loadWork() {
@@ -76,11 +172,21 @@ async function loadWork() {
   }
 
   workList.innerHTML = "";
+  const hasStarterItems = data.some((item) => item.file_path?.startsWith("starter/"));
+  if (!hasStarterItems) {
+    const seeded = await seedStarterWork();
+    if (seeded) {
+      await loadWork();
+      return;
+    }
+  }
+
   if (!data.length) {
-    workList.innerHTML = "<p>No uploaded work yet.</p>";
+    workList.innerHTML = "<p>No work yet.</p>";
     return;
   }
 
+  currentWork = data;
   data.forEach((item) => workList.appendChild(renderWorkItem(item)));
 }
 
@@ -88,10 +194,13 @@ async function deleteWork(item) {
   if (!confirm(`Delete "${item.title}" from the portfolio?`)) return;
 
   setMessage(uploadMessage, "Deleting...");
-  const { error: storageError } = await supabase.storage.from("ugc-media").remove([item.file_path]);
-  if (storageError) {
-    setMessage(uploadMessage, storageError.message, true);
-    return;
+
+  if (!item.file_path?.startsWith("starter/")) {
+    const { error: storageError } = await supabase.storage.from("ugc-media").remove([item.file_path]);
+    if (storageError) {
+      setMessage(uploadMessage, storageError.message, true);
+      return;
+    }
   }
 
   const { error } = await supabase.from("portfolio_work").delete().eq("id", item.id);
@@ -101,6 +210,39 @@ async function deleteWork(item) {
   }
 
   setMessage(uploadMessage, "Deleted.");
+  await loadWork();
+}
+
+async function moveWork(item, direction) {
+  const index = currentWork.findIndex((work) => work.id === item.id);
+  const nextIndex = index + direction;
+  if (index < 0 || nextIndex < 0 || nextIndex >= currentWork.length) return;
+
+  const reordered = [...currentWork];
+  const [moved] = reordered.splice(index, 1);
+  reordered.splice(nextIndex, 0, moved);
+
+  currentWork = reordered;
+  workList.innerHTML = "";
+  reordered.forEach((work) => workList.appendChild(renderWorkItem(work)));
+
+  setMessage(uploadMessage, "Saving order...");
+  const updates = reordered.map((work, orderIndex) =>
+    supabase
+      .from("portfolio_work")
+      .update({ sort_order: (orderIndex + 1) * 10 })
+      .eq("id", work.id)
+  );
+  const results = await Promise.all(updates);
+  const failed = results.find((result) => result.error);
+
+  if (failed) {
+    setMessage(uploadMessage, failed.error.message, true);
+    await loadWork();
+    return;
+  }
+
+  setMessage(uploadMessage, "Order saved. The public portfolio will update automatically.");
   await loadWork();
 }
 

@@ -178,7 +178,7 @@
   }
 
   .work-category {
-    @apply grid grid-cols-1 gap-5 md:grid-cols-[150px_minmax(0,1fr)] md:gap-8;
+    @apply grid grid-cols-1 gap-5 md:grid-cols-[190px_minmax(0,1fr)] md:gap-7 lg:grid-cols-[210px_minmax(0,1fr)];
   }
 
   .work-category + .work-category {
@@ -186,19 +186,21 @@
   }
 
   .work-category h3 {
-    @apply text-lg font-black italic uppercase tracking-tight text-skydeep md:pt-3 md:text-2xl;
+    @apply text-lg font-black italic uppercase tracking-tight text-skydeep md:pt-3 md:text-xl lg:text-2xl;
   }
 
   .work-carousel {
     @apply relative min-w-0;
   }
 
-  .photo-strip {
+  .photo-strip,
+  .video-strip.carousel-track {
     @apply flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-5 pr-10;
     scrollbar-width: none;
   }
 
-  .photo-strip::-webkit-scrollbar {
+  .photo-strip::-webkit-scrollbar,
+  .video-strip.carousel-track::-webkit-scrollbar {
     display: none;
   }
 
@@ -211,8 +213,8 @@
   }
 
   .photo-strip .work-card {
-    @apply min-h-[430px] flex-none snap-start md:w-[360px] lg:w-[390px];
-    width: min(78vw, 360px);
+    @apply min-h-[340px] flex-none snap-start md:w-[280px] lg:w-[300px];
+    width: min(74vw, 280px);
   }
 
   .work-card img {
@@ -220,7 +222,7 @@
   }
 
   .photo-strip .work-card img {
-    @apply min-h-[430px];
+    @apply min-h-[340px];
   }
 
   .work-card:hover img {
@@ -275,6 +277,11 @@
 
   .phone-frame {
     @apply relative grid min-h-[420px] place-items-center overflow-hidden rounded-[2rem] border-[8px] border-ink bg-white p-6 shadow-[inset_0_0_0_4px_#f2f5f8,0_18px_46px_rgba(16,24,40,0.10)];
+  }
+
+  .video-strip.carousel-track .phone-frame {
+    @apply min-h-[390px] flex-none snap-start md:w-[300px] lg:w-[320px];
+    width: min(72vw, 300px);
   }
 
   .phone-frame::before {
@@ -407,6 +414,10 @@
     @apply bg-white text-ink hover:bg-slate-100;
   }
 
+  .dashboard-work-item button:disabled {
+    @apply cursor-not-allowed opacity-45 hover:bg-white;
+  }
+
   .form-message {
     @apply min-h-6 text-sm text-green-700;
   }
@@ -445,6 +456,10 @@
 
   .dashboard-work-item div {
     @apply grid gap-2;
+  }
+
+  .dashboard-work-item .dashboard-actions {
+    @apply mt-2 flex flex-wrap gap-2;
   }
 
   .dashboard-work-item strong {
