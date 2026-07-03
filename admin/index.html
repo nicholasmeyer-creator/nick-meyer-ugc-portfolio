@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Nick Meyer | Portfolio Dashboard</title>
     <meta name="robots" content="noindex">
-    <link rel="stylesheet" href="/assets/styles.css?v=34">
+    <link rel="stylesheet" href="/assets/styles.css?v=35">
   </head>
   <body class="dashboard-page">
     <main class="dashboard-shell">
@@ -36,7 +36,7 @@
         <div class="dashboard-topbar">
           <div>
             <p class="dashboard-label">UGC Work</p>
-            <h1>Add new work</h1>
+            <h1>Portfolio dashboard</h1>
           </div>
           <div class="dashboard-nav-actions">
             <a class="ghost-button" href="/">View Website</a>
@@ -44,6 +44,13 @@
           </div>
         </div>
 
+        <div class="dashboard-tabs" role="tablist" aria-label="Dashboard sections">
+          <button class="is-active" type="button" role="tab" aria-selected="true" data-admin-tab="new-work">New Work</button>
+          <button type="button" role="tab" aria-selected="false" data-admin-tab="content">Content</button>
+          <button type="button" role="tab" aria-selected="false" data-admin-tab="rates">Rates</button>
+        </div>
+
+        <div class="dashboard-tab-panel is-active" id="new-work" role="tabpanel">
         <div class="dashboard-grid">
           <form class="dashboard-form upload-form dashboard-card" id="workForm">
             <h2>Upload portfolio work</h2>
@@ -94,7 +101,9 @@
             <p class="form-message" id="passwordMessage" role="status"></p>
           </form>
         </div>
+        </div>
 
+        <div class="dashboard-tab-panel" id="rates" role="tabpanel">
         <form class="dashboard-form rates-form dashboard-card" id="rateForm">
           <h2>Update rates</h2>
           <p>Add or edit the packages shown in the Rates section on the website.</p>
@@ -123,11 +132,14 @@
         </form>
 
         <div class="dashboard-list rate-list" id="rateList" aria-live="polite"></div>
+        </div>
 
+        <div class="dashboard-tab-panel" id="content" role="tabpanel">
         <div class="dashboard-list" id="workList" aria-live="polite"></div>
+        </div>
       </section>
     </main>
 
-    <script type="module" src="/assets/admin.js?v=34"></script>
+    <script type="module" src="/assets/admin.js?v=35"></script>
   </body>
 </html>

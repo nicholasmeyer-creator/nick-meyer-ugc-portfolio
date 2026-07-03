@@ -95,9 +95,17 @@ function createVideoCard(item) {
 
   const video = document.createElement("video");
   video.src = item.file_url || item.file;
-  video.controls = true;
+  video.autoplay = true;
+  video.loop = true;
+  video.muted = true;
   video.playsInline = true;
   video.preload = "metadata";
+  video.setAttribute("aria-label", `${label}. Click to toggle sound.`);
+  video.addEventListener("click", () => {
+    video.muted = !video.muted;
+    if (video.paused) video.play().catch(() => {});
+    card.classList.toggle("has-sound", !video.muted);
+  });
 
   const caption = document.createElement("small");
   caption.textContent = label;

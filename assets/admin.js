@@ -13,6 +13,8 @@ const rateMessage = document.querySelector("#rateMessage");
 const logoutButton = document.querySelector("#logoutButton");
 const workList = document.querySelector("#workList");
 const rateList = document.querySelector("#rateList");
+const adminTabs = document.querySelectorAll("[data-admin-tab]");
+const adminTabPanels = document.querySelectorAll(".dashboard-tab-panel");
 const megabyte = 1024 * 1024;
 const maxUploadBytes = 45 * megabyte;
 const imageQuality = 0.9;
@@ -110,6 +112,18 @@ function setMessage(element, message, isError = false) {
 function showDashboard(isLoggedIn) {
   loginPanel.classList.toggle("is-hidden", isLoggedIn);
   adminPanel.classList.toggle("is-hidden", !isLoggedIn);
+}
+
+function switchAdminTab(tabId) {
+  adminTabs.forEach((tab) => {
+    const isActive = tab.dataset.adminTab === tabId;
+    tab.classList.toggle("is-active", isActive);
+    tab.setAttribute("aria-selected", String(isActive));
+  });
+
+  adminTabPanels.forEach((panel) => {
+    panel.classList.toggle("is-active", panel.id === tabId);
+  });
 }
 
 function cleanFilename(name) {
@@ -635,6 +649,10 @@ loginForm?.addEventListener("submit", async (event) => {
 logoutButton?.addEventListener("click", async () => {
   await supabase.auth.signOut();
   showDashboard(false);
+});
+
+adminTabs.forEach((tab) => {
+  tab.addEventListener("click", () => switchAdminTab(tab.dataset.adminTab));
 });
 
 passwordForm?.addEventListener("submit", async (event) => {

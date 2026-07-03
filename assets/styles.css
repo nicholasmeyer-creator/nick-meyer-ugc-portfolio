@@ -239,7 +239,7 @@
   }
 
   .work-card strong {
-    @apply bottom-4 left-4 right-4 rounded-xl bg-white/92 px-3.5 py-2.5 text-sm font-extrabold leading-tight text-ink shadow-sm backdrop-blur md:text-[0.95rem];
+    @apply bottom-4 left-4 right-4 rounded-lg bg-white/92 px-3 py-2 text-[0.78rem] font-extrabold leading-tight text-ink shadow-sm backdrop-blur md:text-[0.82rem];
   }
 
   .carousel-arrow {
@@ -276,11 +276,11 @@
   }
 
   .phone-frame {
-    @apply relative grid min-h-[340px] place-items-center overflow-hidden rounded-[2rem] border-[8px] border-ink bg-white p-6 shadow-[inset_0_0_0_4px_#f2f5f8,0_18px_46px_rgba(16,24,40,0.10)];
+    @apply relative grid min-h-[350px] place-items-center overflow-hidden rounded-[2rem] border-[8px] border-ink bg-black p-6 shadow-[inset_0_0_0_4px_#f2f5f8,0_18px_46px_rgba(16,24,40,0.10)];
   }
 
   .video-strip.carousel-track .phone-frame {
-    @apply min-h-[340px] flex-none snap-start md:w-[280px] lg:w-[300px];
+    @apply min-h-[350px] flex-none snap-start md:w-[280px] lg:w-[300px];
     width: min(74vw, 280px);
   }
 
@@ -291,7 +291,7 @@
 
   .phone-frame video,
   .phone-frame img {
-    @apply absolute inset-0 h-full w-full object-cover;
+    @apply absolute inset-0 h-full w-full bg-black object-contain;
   }
 
   .phone-frame span {
@@ -299,7 +299,12 @@
   }
 
   .phone-frame small {
-    @apply absolute left-5 right-5 top-16 z-10 rounded-xl bg-white/90 px-3.5 py-2 text-sm font-extrabold leading-tight text-ink backdrop-blur;
+    @apply absolute left-5 right-5 top-16 z-10 rounded-lg bg-white/90 px-3 py-2 text-[0.78rem] font-extrabold leading-tight text-ink backdrop-blur;
+  }
+
+  .phone-frame.has-sound::after {
+    content: "Sound on";
+    @apply absolute bottom-5 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white/90 px-3 py-1.5 text-[0.68rem] font-black uppercase tracking-[0.14em] text-ink backdrop-blur;
   }
 
   .rates-section,
@@ -455,6 +460,26 @@
 
   .dashboard-nav-actions {
     @apply flex flex-wrap gap-3;
+  }
+
+  .dashboard-tabs {
+    @apply mb-7 flex flex-wrap gap-2 rounded-2xl border border-line bg-slate-50 p-1.5;
+  }
+
+  .dashboard-tabs button {
+    @apply cursor-pointer rounded-xl border border-transparent bg-transparent px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-slate-500 transition hover:text-ink;
+  }
+
+  .dashboard-tabs button.is-active {
+    @apply border-line bg-white text-ink shadow-sm;
+  }
+
+  .dashboard-tab-panel {
+    @apply hidden;
+  }
+
+  .dashboard-tab-panel.is-active {
+    @apply block;
   }
 
   .upload-form,
