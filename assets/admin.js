@@ -23,7 +23,7 @@ const megabyte = 1024 * 1024;
 const maxUploadBytes = 45 * megabyte;
 const imageQuality = 0.9;
 const imageMaxEdge = 2200;
-const logoWidth = 150;
+const logoUploadWidth = 450;
 
 const starterWork = [
   {
@@ -174,7 +174,7 @@ async function resizeLogo(file) {
   }
 
   const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, logoWidth / bitmap.width);
+  const scale = Math.min(1, logoUploadWidth / bitmap.width);
   const canvas = document.createElement("canvas");
   canvas.width = Math.round(bitmap.width * scale);
   canvas.height = Math.round(bitmap.height * scale);
