@@ -209,20 +209,17 @@
   }
 
   .work-card {
-    @apply relative min-h-[330px] overflow-hidden rounded-2xl bg-transparent shadow-[0_18px_46px_rgba(16,24,40,0.10)];
+    @apply relative h-[340px] min-h-0 overflow-hidden rounded-2xl bg-transparent shadow-[0_18px_46px_rgba(16,24,40,0.10)];
   }
 
-  .photo-strip .work-card {
-    @apply min-h-[340px] flex-none snap-start md:w-[280px] lg:w-[300px];
+  .photo-strip .work-card,
+  .video-strip.carousel-track .video-card {
+    @apply h-[340px] min-h-0 flex-none snap-start md:w-[280px] lg:w-[300px];
     width: min(74vw, 280px);
   }
 
   .work-card img {
-    @apply h-full min-h-[330px] w-full object-cover transition duration-300;
-  }
-
-  .photo-strip .work-card img {
-    @apply min-h-[340px];
+    @apply h-full min-h-0 w-full object-cover transition duration-300;
   }
 
   .work-card:hover img {
@@ -276,7 +273,7 @@
   }
 
   .video-card {
-    @apply relative min-h-[340px] flex-none snap-start overflow-hidden rounded-2xl bg-black shadow-[0_18px_46px_rgba(16,24,40,0.10)] md:w-[280px] lg:w-[300px];
+    @apply relative h-[340px] min-h-0 flex-none snap-start overflow-hidden rounded-2xl bg-black shadow-[0_18px_46px_rgba(16,24,40,0.10)] md:w-[280px] lg:w-[300px];
     width: min(74vw, 280px);
   }
 
