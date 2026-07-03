@@ -23,6 +23,7 @@ const megabyte = 1024 * 1024;
 const maxUploadBytes = 45 * megabyte;
 const imageQuality = 0.9;
 const imageMaxEdge = 2200;
+const logoWidth = 150;
 
 const starterWork = [
   {
@@ -167,6 +168,30 @@ async function compressImage(file) {
   return new File([blob], renameAsJpeg(file.name), { type: "image/jpeg" });
 }
 
+async function resizeLogo(file) {
+  if (!file.type.startsWith("image/") || file.type === "image/svg+xml" || file.type === "image/gif") {
+    return file;
+  }
+
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, logoWidth / bitmap.width);
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  const context = canvas.getContext("2d");
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+  const blob = await new Promise((resolve) => {
+    canvas.toBlob(resolve, "image/png");
+  });
+
+  bitmap.close?.();
+  if (!blob) return file;
+  const fileName = `${file.name.replace(/\.[^.]+$/, "") || "logo"}.png`;
+  return new File([blob], fileName, { type: "image/png" });
+}
+
 async function prepareUploadFile(file) {
   if (file.type.startsWith("image/")) {
     setMessage(uploadMessage, "Optimising photo...");
@@ -223,9 +248,7 @@ function renderSettingsPreview(settings = {}) {
 async function uploadBrandAsset(file, userId, folder) {
   if (!(file instanceof File) || !file.size) return null;
 
-  const uploadFile = folder === "logo" && file.type.startsWith("image/")
-    ? await compressImage(file)
-    : file;
+  const uploadFile = folder === "logo" ? await resizeLogo(file) : file;
 
   if (uploadFile.size > maxUploadBytes) {
     throw new Error(`${folder === "favicon" ? "Favicon" : "Logo"} is ${formatBytes(uploadFile.size)}. Please use a file below ${formatBytes(maxUploadBytes)}.`);
