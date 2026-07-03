@@ -5,11 +5,18 @@ const adminPanel = document.querySelector("#adminPanel");
 const loginForm = document.querySelector("#loginForm");
 const workForm = document.querySelector("#workForm");
 const passwordForm = document.querySelector("#passwordForm");
+const rateForm = document.querySelector("#rateForm");
 const loginMessage = document.querySelector("#loginMessage");
 const uploadMessage = document.querySelector("#uploadMessage");
 const passwordMessage = document.querySelector("#passwordMessage");
+const rateMessage = document.querySelector("#rateMessage");
 const logoutButton = document.querySelector("#logoutButton");
 const workList = document.querySelector("#workList");
+const rateList = document.querySelector("#rateList");
+const megabyte = 1024 * 1024;
+const maxUploadBytes = 45 * megabyte;
+const imageQuality = 0.9;
+const imageMaxEdge = 2200;
 
 const starterWork = [
   {
@@ -68,7 +75,32 @@ const starterWork = [
   }
 ];
 
+const starterRates = [
+  {
+    label: "Starter",
+    title: "1 UGC Video",
+    price: "Tailored quote",
+    description: "Concept, filming and edited vertical video for paid or organic social use.",
+    sort_order: 10
+  },
+  {
+    label: "Content Pack",
+    title: "3 UGC Videos",
+    price: "Tailored quote",
+    description: "A stronger campaign set with varied hooks, angles and usable cutdowns.",
+    sort_order: 20
+  },
+  {
+    label: "Photo Add-On",
+    title: "Photography Set",
+    price: "Tailored quote",
+    description: "Lifestyle product, food, travel or venue photos delivered with the campaign.",
+    sort_order: 30
+  }
+];
+
 let currentWork = [];
+let currentRates = [];
 
 function setMessage(element, message, isError = false) {
   element.textContent = message;
@@ -85,9 +117,151 @@ function cleanFilename(name) {
   return safeName || "ugc-upload";
 }
 
-function renderWorkItem(item) {
+function formatBytes(bytes) {
+  return `${(bytes / megabyte).toFixed(bytes > 10 * megabyte ? 0 : 1)}MB`;
+}
+
+function renameAsJpeg(name) {
+  return `${name.replace(/\.[^.]+$/, "") || "ugc-photo"}.jpg`;
+}
+
+async function compressImage(file) {
+  if (!file.type.startsWith("image/") || file.type === "image/gif" || file.type === "image/svg+xml") {
+    return file;
+  }
+
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, imageMaxEdge / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  const context = canvas.getContext("2d");
+  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+  const blob = await new Promise((resolve) => {
+    canvas.toBlob(resolve, "image/jpeg", imageQuality);
+  });
+
+  bitmap.close?.();
+  if (!blob || blob.size >= file.size) return file;
+  return new File([blob], renameAsJpeg(file.name), { type: "image/jpeg" });
+}
+
+async function prepareUploadFile(file) {
+  if (file.type.startsWith("image/")) {
+    setMessage(uploadMessage, "Optimising photo...");
+    const compressed = await compressImage(file);
+    if (compressed.size > maxUploadBytes) {
+      throw new Error(`This photo is still ${formatBytes(compressed.size)} after optimisation. Please use an image under ${formatBytes(maxUploadBytes)}.`);
+    }
+    return compressed;
+  }
+
+  if (file.type.startsWith("video/") && file.size > maxUploadBytes) {
+    throw new Error(`This video is ${formatBytes(file.size)}. Please export/compress it below ${formatBytes(maxUploadBytes)} before uploading, or increase the Supabase bucket file size limit.`);
+  }
+
+  if (file.size > maxUploadBytes) {
+    throw new Error(`This file is ${formatBytes(file.size)}. Please upload a file below ${formatBytes(maxUploadBytes)}.`);
+  }
+
+  return file;
+}
+
+function renderEditForm(item) {
+  const form = document.createElement("form");
+  form.className = "dashboard-edit-form";
+
+  form.innerHTML = `
+    <label>
+      Type
+      <select name="type" required>
+        <option value="photo">Photo</option>
+        <option value="video">Video</option>
+      </select>
+    </label>
+    <label>
+      Brand / Client
+      <input type="text" name="brand" required>
+    </label>
+    <label>
+      Work Needed
+      <input type="text" name="title" required>
+    </label>
+    <label>
+      Display Order
+      <input type="number" name="sort_order">
+    </label>
+    <label class="edit-wide">
+      Brief Notes
+      <textarea name="brief" rows="3"></textarea>
+    </label>
+    <div class="dashboard-actions edit-wide">
+      <button type="submit">Save Text</button>
+      <button type="button" data-edit-cancel>Cancel</button>
+    </div>
+  `;
+
+  form.elements.type.value = item.type || "photo";
+  form.elements.brand.value = item.brand || "";
+  form.elements.title.value = item.title || "";
+  form.elements.sort_order.value = item.sort_order ?? "";
+  form.elements.brief.value = item.brief || "";
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    saveWorkText(item, form);
+  });
+  form.querySelector("[data-edit-cancel]").addEventListener("click", () => loadWork());
+
+  return form;
+}
+
+function renderWorkSections() {
+  workList.innerHTML = "";
+  const photos = currentWork.filter((item) => item.type === "photo");
+  const videos = currentWork.filter((item) => item.type === "video");
+
+  workList.append(
+    renderWorkSection("Photography", photos),
+    renderWorkSection("Videography", videos)
+  );
+}
+
+function renderWorkSection(title, items) {
+  const section = document.createElement("section");
+  section.className = "dashboard-work-section";
+
+  const header = document.createElement("div");
+  header.className = "dashboard-work-heading";
+  header.innerHTML = `
+    <div>
+      <p class="dashboard-label">${title}</p>
+      <h2>${title} order</h2>
+    </div>
+    <span>${items.length} ${items.length === 1 ? "item" : "items"}</span>
+  `;
+
+  const track = document.createElement("div");
+  track.className = "dashboard-work-carousel";
+
+  if (!items.length) {
+    const empty = document.createElement("p");
+    empty.className = "dashboard-empty";
+    empty.textContent = `No ${title.toLowerCase()} uploaded yet.`;
+    track.appendChild(empty);
+  } else {
+    items.forEach((item) => track.appendChild(renderWorkItem(item, items)));
+  }
+
+  section.append(header, track);
+  return section;
+}
+
+function renderWorkItem(item, orderedItems = currentWork.filter((work) => work.type === item.type)) {
   const article = document.createElement("article");
   article.className = "dashboard-work-item";
+  const position = orderedItems.findIndex((work) => work.id === item.id);
 
   const preview = item.type === "video" ? document.createElement("video") : document.createElement("img");
   preview.src = item.file_url;
@@ -109,26 +283,83 @@ function renderWorkItem(item) {
   const actions = document.createElement("div");
   actions.className = "dashboard-actions";
 
-  const moveUpButton = document.createElement("button");
-  moveUpButton.type = "button";
-  moveUpButton.textContent = "Move Up";
-  moveUpButton.disabled = currentWork.indexOf(item) === 0;
-  moveUpButton.addEventListener("click", () => moveWork(item, -1));
+  const moveLeftButton = document.createElement("button");
+  moveLeftButton.type = "button";
+  moveLeftButton.textContent = "Move Left";
+  moveLeftButton.disabled = position <= 0;
+  moveLeftButton.addEventListener("click", () => moveWork(item, -1, orderedItems));
 
-  const moveDownButton = document.createElement("button");
-  moveDownButton.type = "button";
-  moveDownButton.textContent = "Move Down";
-  moveDownButton.disabled = currentWork.indexOf(item) === currentWork.length - 1;
-  moveDownButton.addEventListener("click", () => moveWork(item, 1));
+  const moveRightButton = document.createElement("button");
+  moveRightButton.type = "button";
+  moveRightButton.textContent = "Move Right";
+  moveRightButton.disabled = position === orderedItems.length - 1;
+  moveRightButton.addEventListener("click", () => moveWork(item, 1, orderedItems));
+
+  const editButton = document.createElement("button");
+  editButton.type = "button";
+  editButton.textContent = "Edit Text";
+  editButton.addEventListener("click", () => {
+    article.classList.add("is-editing");
+    details.replaceChildren(renderEditForm(item));
+  });
 
   const deleteButton = document.createElement("button");
   deleteButton.type = "button";
   deleteButton.textContent = "Delete";
   deleteButton.addEventListener("click", () => deleteWork(item));
 
-  actions.append(moveUpButton, moveDownButton, deleteButton);
+  actions.append(moveLeftButton, moveRightButton, editButton, deleteButton);
   details.append(title, meta, brief, actions);
   article.append(preview, details);
+  return article;
+}
+
+function renderRateItem(item) {
+  const article = document.createElement("article");
+  article.className = "dashboard-rate-item";
+
+  const form = document.createElement("form");
+  form.className = "dashboard-edit-form";
+  form.innerHTML = `
+    <label>
+      Package Label
+      <input type="text" name="label" required>
+    </label>
+    <label>
+      Package Name
+      <input type="text" name="title" required>
+    </label>
+    <label>
+      Price / Note
+      <input type="text" name="price">
+    </label>
+    <label>
+      Display Order
+      <input type="number" name="sort_order">
+    </label>
+    <label class="edit-wide">
+      Description
+      <textarea name="description" rows="3" required></textarea>
+    </label>
+    <div class="dashboard-actions edit-wide">
+      <button type="submit">Save Rate</button>
+      <button type="button" data-delete-rate>Delete</button>
+    </div>
+  `;
+
+  form.elements.label.value = item.label || "";
+  form.elements.title.value = item.title || "";
+  form.elements.price.value = item.price || "";
+  form.elements.sort_order.value = item.sort_order ?? "";
+  form.elements.description.value = item.description || "";
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    saveRate(item, form);
+  });
+
+  form.querySelector("[data-delete-rate]").addEventListener("click", () => deleteRate(item));
+  article.appendChild(form);
   return article;
 }
 
@@ -187,7 +418,65 @@ async function loadWork() {
   }
 
   currentWork = data;
-  data.forEach((item) => workList.appendChild(renderWorkItem(item)));
+  renderWorkSections();
+}
+
+async function seedStarterRates() {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const userId = sessionData.session?.user?.id;
+  if (!userId) return false;
+
+  const { error } = await supabase.from("portfolio_rates").insert(
+    starterRates.map((item) => ({
+      ...item,
+      user_id: userId
+    }))
+  );
+
+  if (error) {
+    setMessage(rateMessage, error.message, true);
+    return false;
+  }
+
+  setMessage(rateMessage, "Starter rates added. You can edit them below.");
+  return true;
+}
+
+async function loadRates() {
+  if (!isSupabaseConfigured) {
+    rateList.innerHTML = "<p>Add your Supabase keys to use rates.</p>";
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("portfolio_rates")
+    .select("*")
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    rateList.innerHTML = "";
+    setMessage(rateMessage, `${error.message}. Run the latest supabase/schema.sql to enable editable rates.`, true);
+    return;
+  }
+
+  if (!data.length) {
+    const seeded = await seedStarterRates();
+    if (seeded) {
+      await loadRates();
+      return;
+    }
+  }
+
+  currentRates = data;
+  rateList.innerHTML = "";
+
+  if (!data.length) {
+    rateList.innerHTML = "<p>No rates yet.</p>";
+    return;
+  }
+
+  data.forEach((item) => rateList.appendChild(renderRateItem(item)));
 }
 
 async function deleteWork(item) {
@@ -213,18 +502,20 @@ async function deleteWork(item) {
   await loadWork();
 }
 
-async function moveWork(item, direction) {
-  const index = currentWork.findIndex((work) => work.id === item.id);
+async function moveWork(item, direction, orderedItems = currentWork.filter((work) => work.type === item.type)) {
+  const index = orderedItems.findIndex((work) => work.id === item.id);
   const nextIndex = index + direction;
-  if (index < 0 || nextIndex < 0 || nextIndex >= currentWork.length) return;
+  if (index < 0 || nextIndex < 0 || nextIndex >= orderedItems.length) return;
 
-  const reordered = [...currentWork];
+  const reordered = [...orderedItems];
   const [moved] = reordered.splice(index, 1);
   reordered.splice(nextIndex, 0, moved);
 
-  currentWork = reordered;
-  workList.innerHTML = "";
-  reordered.forEach((work) => workList.appendChild(renderWorkItem(work)));
+  currentWork = currentWork.map((work) => {
+    const orderIndex = reordered.findIndex((orderedWork) => orderedWork.id === work.id);
+    return orderIndex >= 0 ? { ...work, sort_order: (orderIndex + 1) * 10 } : work;
+  });
+  renderWorkSections();
 
   setMessage(uploadMessage, "Saving order...");
   const updates = reordered.map((work, orderIndex) =>
@@ -243,6 +534,75 @@ async function moveWork(item, direction) {
   }
 
   setMessage(uploadMessage, "Order saved. The public portfolio will update automatically.");
+  await loadWork();
+}
+
+async function saveRate(item, form) {
+  const formData = new FormData(form);
+  const updates = {
+    label: String(formData.get("label") || "").trim(),
+    title: String(formData.get("title") || "").trim(),
+    price: String(formData.get("price") || "").trim(),
+    description: String(formData.get("description") || "").trim(),
+    sort_order: Number(formData.get("sort_order") || 0)
+  };
+
+  if (!updates.label || !updates.title || !updates.description) {
+    setMessage(rateMessage, "Package label, package name and description are required.", true);
+    return;
+  }
+
+  setMessage(rateMessage, "Saving rate...");
+  const { error } = await supabase.from("portfolio_rates").update(updates).eq("id", item.id);
+
+  if (error) {
+    setMessage(rateMessage, error.message, true);
+    return;
+  }
+
+  setMessage(rateMessage, "Rate updated. The website will update automatically.");
+  await loadRates();
+}
+
+async function deleteRate(item) {
+  if (!confirm(`Delete "${item.title}" from your rates?`)) return;
+
+  setMessage(rateMessage, "Deleting rate...");
+  const { error } = await supabase.from("portfolio_rates").delete().eq("id", item.id);
+
+  if (error) {
+    setMessage(rateMessage, error.message, true);
+    return;
+  }
+
+  setMessage(rateMessage, "Rate deleted.");
+  await loadRates();
+}
+
+async function saveWorkText(item, form) {
+  const formData = new FormData(form);
+  const updates = {
+    type: formData.get("type"),
+    brand: String(formData.get("brand") || "").trim(),
+    title: String(formData.get("title") || "").trim(),
+    brief: String(formData.get("brief") || "").trim(),
+    sort_order: Number(formData.get("sort_order") || 0)
+  };
+
+  if (!updates.brand || !updates.title) {
+    setMessage(uploadMessage, "Brand and work needed are required.", true);
+    return;
+  }
+
+  setMessage(uploadMessage, "Saving text...");
+  const { error } = await supabase.from("portfolio_work").update(updates).eq("id", item.id);
+
+  if (error) {
+    setMessage(uploadMessage, error.message, true);
+    return;
+  }
+
+  setMessage(uploadMessage, "Text updated. The public portfolio will update automatically.");
   await loadWork();
 }
 
@@ -269,6 +629,7 @@ loginForm?.addEventListener("submit", async (event) => {
   setMessage(loginMessage, "");
   showDashboard(true);
   await loadWork();
+  await loadRates();
 });
 
 logoutButton?.addEventListener("click", async () => {
@@ -304,6 +665,45 @@ passwordForm?.addEventListener("submit", async (event) => {
   setMessage(passwordMessage, "Password updated.");
 });
 
+rateForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const { data: sessionData } = await supabase.auth.getSession();
+  const userId = sessionData.session?.user?.id;
+  if (!userId) {
+    setMessage(rateMessage, "Please log in again.", true);
+    showDashboard(false);
+    return;
+  }
+
+  const form = new FormData(rateForm);
+  const rate = {
+    user_id: userId,
+    label: String(form.get("label") || "").trim(),
+    title: String(form.get("title") || "").trim(),
+    price: String(form.get("price") || "").trim(),
+    description: String(form.get("description") || "").trim(),
+    sort_order: Number(form.get("sort_order") || 0)
+  };
+
+  if (!rate.label || !rate.title || !rate.description) {
+    setMessage(rateMessage, "Package label, package name and description are required.", true);
+    return;
+  }
+
+  setMessage(rateMessage, "Adding rate...");
+  const { error } = await supabase.from("portfolio_rates").insert(rate);
+
+  if (error) {
+    setMessage(rateMessage, error.message, true);
+    return;
+  }
+
+  rateForm.reset();
+  setMessage(rateMessage, "Rate added. The website will update automatically.");
+  await loadRates();
+});
+
 workForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
   const form = new FormData(workForm);
@@ -322,15 +722,30 @@ workForm?.addEventListener("submit", async (event) => {
     return;
   }
 
-  setMessage(uploadMessage, "Uploading...");
+  let uploadFile;
+  try {
+    uploadFile = await prepareUploadFile(file);
+  } catch (error) {
+    setMessage(uploadMessage, error.message, true);
+    return;
+  }
 
-  const filePath = `${userId}/${Date.now()}-${cleanFilename(file.name)}`;
+  const savedBytes = file.size - uploadFile.size;
+  const optimisedMessage = savedBytes > megabyte
+    ? ` Optimised from ${formatBytes(file.size)} to ${formatBytes(uploadFile.size)}.`
+    : "";
+  setMessage(uploadMessage, `Uploading...${optimisedMessage}`);
+
+  const filePath = `${userId}/${Date.now()}-${cleanFilename(uploadFile.name)}`;
   const { error: uploadError } = await supabase.storage
     .from("ugc-media")
-    .upload(filePath, file, { cacheControl: "3600", upsert: false });
+    .upload(filePath, uploadFile, { cacheControl: "3600", upsert: false });
 
   if (uploadError) {
-    setMessage(uploadMessage, uploadError.message, true);
+    const sizeHint = uploadError.message.toLowerCase().includes("maximum allowed size")
+      ? ` The current dashboard limit is ${formatBytes(maxUploadBytes)}. Compress the file smaller or increase the Supabase bucket limit.`
+      : "";
+    setMessage(uploadMessage, `${uploadError.message}${sizeHint}`, true);
     return;
   }
 
@@ -366,7 +781,10 @@ async function init() {
 
   const { data } = await supabase.auth.getSession();
   showDashboard(Boolean(data.session));
-  if (data.session) await loadWork();
+  if (data.session) {
+    await loadWork();
+    await loadRates();
+  }
 }
 
 init();

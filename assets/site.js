@@ -27,6 +27,7 @@ if (!reduceMotion && "IntersectionObserver" in window) {
 
 const photoWork = document.querySelector("#photoWork");
 const videoWork = document.querySelector("#videoWork");
+const ratesGrid = document.querySelector("#ratesGrid");
 
 function setupCarousels() {
   document.querySelectorAll("[data-carousel]").forEach((carousel) => {
@@ -89,6 +90,9 @@ function createVideoCard(item) {
   card.className = "phone-frame reveal is-visible";
   const label = item.title || item.brand || "Video";
 
+  const brand = document.createElement("span");
+  brand.textContent = item.brand || "UGC";
+
   const video = document.createElement("video");
   video.src = item.file_url || item.file;
   video.controls = true;
@@ -98,7 +102,26 @@ function createVideoCard(item) {
   const caption = document.createElement("small");
   caption.textContent = label;
 
-  card.append(video, caption);
+  card.append(video, brand, caption);
+  return card;
+}
+
+function createRateCard(item) {
+  const card = document.createElement("article");
+
+  const label = document.createElement("span");
+  label.textContent = item.label || "UGC";
+
+  const title = document.createElement("h3");
+  title.textContent = item.title || "Custom package";
+
+  const price = document.createElement("strong");
+  price.textContent = item.price || "Tailored quote";
+
+  const description = document.createElement("p");
+  description.textContent = item.description || "A flexible content package tailored to your campaign needs.";
+
+  card.append(label, title, price, description);
   return card;
 }
 
@@ -142,4 +165,24 @@ async function loadUploadedWork() {
   }
 }
 
-loadUploadedWork().finally(setupCarousels);
+async function loadRates() {
+  if (!ratesGrid || !isSupabaseConfigured) return;
+
+  try {
+    const { data, error } = await supabase
+      .from("portfolio_rates")
+      .select("label, title, price, description, sort_order, created_at")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true });
+
+    if (error) throw error;
+    if (!Array.isArray(data) || !data.length) return;
+
+    ratesGrid.querySelectorAll("[data-fallback-rate]").forEach((item) => item.remove());
+    data.forEach((item) => ratesGrid.appendChild(createRateCard(item)));
+  } catch {
+    // Keep the fallback rates visible until the Supabase rates table exists.
+  }
+}
+
+Promise.all([loadUploadedWork(), loadRates()]).finally(setupCarousels);

@@ -15,6 +15,19 @@ create table if not exists public.portfolio_work (
 
 alter table public.portfolio_work enable row level security;
 
+create table if not exists public.portfolio_rates (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete cascade default auth.uid(),
+  label text not null,
+  title text not null,
+  price text,
+  description text not null,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now()
+);
+
+alter table public.portfolio_rates enable row level security;
+
 drop policy if exists "Portfolio work is publicly readable" on public.portfolio_work;
 create policy "Portfolio work is publicly readable"
 on public.portfolio_work
@@ -39,6 +52,34 @@ with check ((select auth.uid()) = user_id);
 drop policy if exists "Authenticated users can delete own portfolio work" on public.portfolio_work;
 create policy "Authenticated users can delete own portfolio work"
 on public.portfolio_work
+for delete
+to authenticated
+using ((select auth.uid()) = user_id);
+
+drop policy if exists "Portfolio rates are publicly readable" on public.portfolio_rates;
+create policy "Portfolio rates are publicly readable"
+on public.portfolio_rates
+for select
+using (true);
+
+drop policy if exists "Authenticated users can add own portfolio rates" on public.portfolio_rates;
+create policy "Authenticated users can add own portfolio rates"
+on public.portfolio_rates
+for insert
+to authenticated
+with check ((select auth.uid()) = user_id);
+
+drop policy if exists "Authenticated users can update own portfolio rates" on public.portfolio_rates;
+create policy "Authenticated users can update own portfolio rates"
+on public.portfolio_rates
+for update
+to authenticated
+using ((select auth.uid()) = user_id)
+with check ((select auth.uid()) = user_id);
+
+drop policy if exists "Authenticated users can delete own portfolio rates" on public.portfolio_rates;
+create policy "Authenticated users can delete own portfolio rates"
+on public.portfolio_rates
 for delete
 to authenticated
 using ((select auth.uid()) = user_id);

@@ -32,7 +32,7 @@ npm run dev
 4. Go to Authentication, then Users, and create the login user for the dashboard.
 5. Make sure the `ugc-media` storage bucket exists and is public. The SQL creates it automatically.
 
-The public site reads from the `portfolio_work` table. The dashboard uploads files to the `ugc-media` bucket, then creates the database row.
+The public site reads work from `portfolio_work` and package pricing from `portfolio_rates`. The dashboard uploads files to the `ugc-media` bucket, then creates the database row.
 
 ## Vercel Setup
 

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Nick Meyer | Portfolio Dashboard</title>
     <meta name="robots" content="noindex">
-    <link rel="stylesheet" href="/assets/styles.css?v=32">
+    <link rel="stylesheet" href="/assets/styles.css?v=34">
   </head>
   <body class="dashboard-page">
     <main class="dashboard-shell">
@@ -47,6 +47,7 @@
         <div class="dashboard-grid">
           <form class="dashboard-form upload-form dashboard-card" id="workForm">
             <h2>Upload portfolio work</h2>
+            <p class="upload-hint">Photos are optimised automatically. Keep videos under 45MB before uploading.</p>
             <label>
               Type
               <select name="type" required>
@@ -94,10 +95,39 @@
           </form>
         </div>
 
+        <form class="dashboard-form rates-form dashboard-card" id="rateForm">
+          <h2>Update rates</h2>
+          <p>Add or edit the packages shown in the Rates section on the website.</p>
+          <label>
+            Package Label
+            <input type="text" name="label" placeholder="Starter" required>
+          </label>
+          <label>
+            Package Name
+            <input type="text" name="title" placeholder="1 UGC Video" required>
+          </label>
+          <label>
+            Price / Note
+            <input type="text" name="price" placeholder="From R2,500">
+          </label>
+          <label>
+            Display Order
+            <input type="number" name="sort_order" value="0">
+          </label>
+          <label class="edit-wide">
+            Description
+            <textarea name="description" rows="3" placeholder="Concept, filming and edited vertical video for paid or organic social use." required></textarea>
+          </label>
+          <button type="submit">Add Rate</button>
+          <p class="form-message" id="rateMessage" role="status"></p>
+        </form>
+
+        <div class="dashboard-list rate-list" id="rateList" aria-live="polite"></div>
+
         <div class="dashboard-list" id="workList" aria-live="polite"></div>
       </section>
     </main>
 
-    <script type="module" src="/assets/admin.js?v=32"></script>
+    <script type="module" src="/assets/admin.js?v=34"></script>
   </body>
 </html>
