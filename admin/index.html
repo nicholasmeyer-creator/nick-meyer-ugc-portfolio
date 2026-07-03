@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Nick Meyer | Portfolio Dashboard</title>
     <meta name="robots" content="noindex">
-    <link rel="stylesheet" href="/assets/styles.css?v=35">
+    <link rel="stylesheet" href="/assets/styles.css?v=42">
   </head>
   <body class="dashboard-page">
     <main class="dashboard-shell">
@@ -45,7 +45,7 @@
         </div>
 
         <div class="dashboard-tabs" role="tablist" aria-label="Dashboard sections">
-          <button class="is-active" type="button" role="tab" aria-selected="true" data-admin-tab="new-work">New Work</button>
+          <button class="is-active" type="button" role="tab" aria-selected="true" data-admin-tab="new-work">Add work</button>
           <button type="button" role="tab" aria-selected="false" data-admin-tab="content">Content</button>
           <button type="button" role="tab" aria-selected="false" data-admin-tab="rates">Rates</button>
         </div>
@@ -135,11 +135,50 @@
         </div>
 
         <div class="dashboard-tab-panel" id="content" role="tabpanel">
+        <form class="dashboard-form dashboard-card site-settings-form" id="siteSettingsForm">
+          <div>
+            <h2>Website branding</h2>
+            <p>Update the logo shown in the header and the favicon shown in the browser tab.</p>
+          </div>
+          <label>
+            Logo Text
+            <input type="text" name="logo_text" placeholder="Nick Meyer">
+          </label>
+          <label>
+            Logo Image
+            <input type="file" name="logo_file" accept="image/*">
+          </label>
+          <label>
+            Favicon
+            <input type="file" name="favicon_file" accept="image/png,image/svg+xml,image/x-icon,image/vnd.microsoft.icon">
+          </label>
+          <label>
+            Instagram Handle
+            <input type="text" name="instagram_handle" placeholder="@nick_meyerrr">
+          </label>
+          <label>
+            TikTok Handle
+            <input type="text" name="tiktok_handle" placeholder="@nick_meyerrr">
+          </label>
+          <div class="settings-preview" aria-live="polite">
+            <div>
+              <span>Current logo</span>
+              <div class="settings-preview-box" id="logoPreview">Nick Meyer</div>
+            </div>
+            <div>
+              <span>Current favicon</span>
+              <div class="settings-preview-box favicon-preview" id="faviconPreview">None</div>
+            </div>
+          </div>
+          <button type="submit">Save Branding</button>
+          <p class="form-message" id="settingsMessage" role="status"></p>
+        </form>
+
         <div class="dashboard-list" id="workList" aria-live="polite"></div>
         </div>
       </section>
     </main>
 
-    <script type="module" src="/assets/admin.js?v=35"></script>
+    <script type="module" src="/assets/admin.js?v=42"></script>
   </body>
 </html>

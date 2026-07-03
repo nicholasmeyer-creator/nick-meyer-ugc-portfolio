@@ -28,6 +28,60 @@ if (!reduceMotion && "IntersectionObserver" in window) {
 const photoWork = document.querySelector("#photoWork");
 const videoWork = document.querySelector("#videoWork");
 const ratesGrid = document.querySelector("#ratesGrid");
+const siteLogo = document.querySelector(".ugc-logo");
+
+function cleanHandle(handle) {
+  return String(handle || "").trim().replace(/^@+/, "");
+}
+
+function setFavicon(url) {
+  if (!url) return;
+  let icon = document.querySelector("link[rel='icon']");
+  if (!icon) {
+    icon = document.createElement("link");
+    icon.rel = "icon";
+    document.head.appendChild(icon);
+  }
+  icon.href = url;
+}
+
+function updateSocialLinks(settings = {}) {
+  const instagram = cleanHandle(settings.instagram_handle);
+  const tiktok = cleanHandle(settings.tiktok_handle);
+
+  if (instagram) {
+    document.querySelectorAll("a[href*='instagram.com']").forEach((link) => {
+      link.href = `https://www.instagram.com/${instagram}/`;
+      if (link.textContent.trim().startsWith("@")) link.textContent = `@${instagram}`;
+    });
+    document.querySelectorAll(".social-row strong").forEach((item) => {
+      item.textContent = `@${instagram}`;
+    });
+  }
+
+  if (tiktok) {
+    document.querySelectorAll("a[href*='tiktok.com']").forEach((link) => {
+      link.href = `https://www.tiktok.com/@${tiktok}`;
+    });
+  }
+}
+
+function applySettings(settings = {}) {
+  if (siteLogo) {
+    siteLogo.replaceChildren();
+    if (settings.logo_url) {
+      const image = document.createElement("img");
+      image.src = settings.logo_url;
+      image.alt = settings.logo_text || "Nick Meyer";
+      siteLogo.appendChild(image);
+    } else {
+      siteLogo.textContent = settings.logo_text || "Nick Meyer";
+    }
+  }
+
+  setFavicon(settings.favicon_url);
+  updateSocialLinks(settings);
+}
 
 function setupCarousels() {
   document.querySelectorAll("[data-carousel]").forEach((carousel) => {
@@ -187,4 +241,21 @@ async function loadRates() {
   }
 }
 
-Promise.all([loadUploadedWork(), loadRates()]).finally(setupCarousels);
+async function loadSettings() {
+  if (!isSupabaseConfigured) return;
+
+  try {
+    const { data, error } = await supabase
+      .from("portfolio_settings")
+      .select("logo_text, logo_url, favicon_url, instagram_handle, tiktok_handle")
+      .eq("id", "site")
+      .maybeSingle();
+
+    if (error) throw error;
+    if (data) applySettings(data);
+  } catch {
+    // Keep the default branding visible until the settings table exists.
+  }
+}
+
+Promise.all([loadUploadedWork(), loadRates(), loadSettings()]).finally(setupCarousels);

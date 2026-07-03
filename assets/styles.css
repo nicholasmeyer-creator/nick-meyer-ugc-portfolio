@@ -63,6 +63,10 @@
     @apply text-lg font-semibold tracking-tight text-ink md:text-xl;
   }
 
+  .ugc-logo img {
+    @apply h-9 w-auto object-contain;
+  }
+
   .ugc-nav {
     @apply flex items-center gap-1 overflow-x-auto text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-slate-700 md:gap-2 md:text-xs;
   }
@@ -279,7 +283,7 @@
 
   .video-card video,
   .video-card img {
-    @apply absolute inset-0 h-full w-full bg-black object-contain;
+    @apply absolute inset-0 h-full w-full bg-black object-cover;
   }
 
   .video-card.has-sound::after {
@@ -471,7 +475,8 @@
   }
 
   .upload-form,
-  .rates-form {
+  .rates-form,
+  .site-settings-form {
     @apply md:grid-cols-2;
   }
 
@@ -481,8 +486,36 @@
   .upload-form .form-message,
   .rates-form .edit-wide,
   .rates-form button,
-  .rates-form .form-message {
+  .rates-form .form-message,
+  .site-settings-form > div:first-child,
+  .site-settings-form .settings-preview,
+  .site-settings-form button,
+  .site-settings-form .form-message {
     @apply md:col-span-2;
+  }
+
+  .settings-preview {
+    @apply grid gap-4 md:grid-cols-2;
+  }
+
+  .settings-preview > div {
+    @apply rounded-2xl border border-line bg-slate-50 p-4;
+  }
+
+  .settings-preview span {
+    @apply mb-3 block text-xs font-black uppercase tracking-[0.18em] text-slate-500;
+  }
+
+  .settings-preview-box {
+    @apply flex min-h-20 items-center rounded-xl bg-white px-4 py-3 text-lg font-extrabold text-ink shadow-sm;
+  }
+
+  .settings-preview-box img {
+    @apply max-h-14 w-auto object-contain;
+  }
+
+  .favicon-preview img {
+    @apply h-8 w-8;
   }
 
   .dashboard-list {

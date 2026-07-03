@@ -6,13 +6,17 @@ const loginForm = document.querySelector("#loginForm");
 const workForm = document.querySelector("#workForm");
 const passwordForm = document.querySelector("#passwordForm");
 const rateForm = document.querySelector("#rateForm");
+const siteSettingsForm = document.querySelector("#siteSettingsForm");
 const loginMessage = document.querySelector("#loginMessage");
 const uploadMessage = document.querySelector("#uploadMessage");
 const passwordMessage = document.querySelector("#passwordMessage");
 const rateMessage = document.querySelector("#rateMessage");
+const settingsMessage = document.querySelector("#settingsMessage");
 const logoutButton = document.querySelector("#logoutButton");
 const workList = document.querySelector("#workList");
 const rateList = document.querySelector("#rateList");
+const logoPreview = document.querySelector("#logoPreview");
+const faviconPreview = document.querySelector("#faviconPreview");
 const adminTabs = document.querySelectorAll("[data-admin-tab]");
 const adminTabPanels = document.querySelectorAll(".dashboard-tab-panel");
 const megabyte = 1024 * 1024;
@@ -103,8 +107,10 @@ const starterRates = [
 
 let currentWork = [];
 let currentRates = [];
+let currentSettings = null;
 
 function setMessage(element, message, isError = false) {
+  if (!element) return;
   element.textContent = message;
   element.classList.toggle("is-error", isError);
 }
@@ -180,6 +186,63 @@ async function prepareUploadFile(file) {
   }
 
   return file;
+}
+
+function renderSettingsPreview(settings = {}) {
+  if (siteSettingsForm?.elements.logo_text) {
+    siteSettingsForm.elements.logo_text.value = settings.logo_text || "";
+    siteSettingsForm.elements.instagram_handle.value = settings.instagram_handle || "";
+    siteSettingsForm.elements.tiktok_handle.value = settings.tiktok_handle || "";
+  }
+
+  if (logoPreview) {
+    logoPreview.replaceChildren();
+    if (settings.logo_url) {
+      const image = document.createElement("img");
+      image.src = settings.logo_url;
+      image.alt = settings.logo_text || "Website logo";
+      logoPreview.appendChild(image);
+    } else {
+      logoPreview.textContent = settings.logo_text || "Nick Meyer";
+    }
+  }
+
+  if (faviconPreview) {
+    faviconPreview.replaceChildren();
+    if (settings.favicon_url) {
+      const image = document.createElement("img");
+      image.src = settings.favicon_url;
+      image.alt = "Website favicon";
+      faviconPreview.appendChild(image);
+    } else {
+      faviconPreview.textContent = "None";
+    }
+  }
+}
+
+async function uploadBrandAsset(file, userId, folder) {
+  if (!(file instanceof File) || !file.size) return null;
+
+  const uploadFile = folder === "logo" && file.type.startsWith("image/")
+    ? await compressImage(file)
+    : file;
+
+  if (uploadFile.size > maxUploadBytes) {
+    throw new Error(`${folder === "favicon" ? "Favicon" : "Logo"} is ${formatBytes(uploadFile.size)}. Please use a file below ${formatBytes(maxUploadBytes)}.`);
+  }
+
+  const filePath = `${userId}/settings/${folder}-${Date.now()}-${cleanFilename(uploadFile.name)}`;
+  const { error } = await supabase.storage
+    .from("ugc-media")
+    .upload(filePath, uploadFile, { cacheControl: "3600", upsert: true });
+
+  if (error) throw error;
+
+  const { data } = supabase.storage.from("ugc-media").getPublicUrl(filePath);
+  return {
+    path: filePath,
+    url: data.publicUrl
+  };
 }
 
 function renderEditForm(item) {
@@ -493,6 +556,25 @@ async function loadRates() {
   data.forEach((item) => rateList.appendChild(renderRateItem(item)));
 }
 
+async function loadSettings() {
+  if (!isSupabaseConfigured || !siteSettingsForm) return;
+
+  const { data, error } = await supabase
+    .from("portfolio_settings")
+    .select("*")
+    .eq("id", "site")
+    .maybeSingle();
+
+  if (error) {
+    setMessage(settingsMessage, `${error.message}. Run the latest supabase/schema.sql to enable website branding.`, true);
+    renderSettingsPreview({});
+    return;
+  }
+
+  currentSettings = data || {};
+  renderSettingsPreview(currentSettings);
+}
+
 async function deleteWork(item) {
   if (!confirm(`Delete "${item.title}" from the portfolio?`)) return;
 
@@ -644,6 +726,7 @@ loginForm?.addEventListener("submit", async (event) => {
   showDashboard(true);
   await loadWork();
   await loadRates();
+  await loadSettings();
 });
 
 logoutButton?.addEventListener("click", async () => {
@@ -720,6 +803,63 @@ rateForm?.addEventListener("submit", async (event) => {
   rateForm.reset();
   setMessage(rateMessage, "Rate added. The website will update automatically.");
   await loadRates();
+});
+
+siteSettingsForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const { data: sessionData } = await supabase.auth.getSession();
+  const userId = sessionData.session?.user?.id;
+  if (!userId) {
+    setMessage(settingsMessage, "Please log in again.", true);
+    showDashboard(false);
+    return;
+  }
+
+  const form = new FormData(siteSettingsForm);
+  const updates = {
+    id: "site",
+    user_id: userId,
+    logo_text: String(form.get("logo_text") || "").trim(),
+    instagram_handle: String(form.get("instagram_handle") || "").trim(),
+    tiktok_handle: String(form.get("tiktok_handle") || "").trim(),
+    updated_at: new Date().toISOString()
+  };
+
+  try {
+    setMessage(settingsMessage, "Saving branding...");
+    const logoUpload = await uploadBrandAsset(form.get("logo_file"), userId, "logo");
+    const faviconUpload = await uploadBrandAsset(form.get("favicon_file"), userId, "favicon");
+
+    if (logoUpload) {
+      updates.logo_path = logoUpload.path;
+      updates.logo_url = logoUpload.url;
+    } else if (currentSettings?.logo_path || currentSettings?.logo_url) {
+      updates.logo_path = currentSettings.logo_path;
+      updates.logo_url = currentSettings.logo_url;
+    }
+
+    if (faviconUpload) {
+      updates.favicon_path = faviconUpload.path;
+      updates.favicon_url = faviconUpload.url;
+    } else if (currentSettings?.favicon_path || currentSettings?.favicon_url) {
+      updates.favicon_path = currentSettings.favicon_path;
+      updates.favicon_url = currentSettings.favicon_url;
+    }
+
+    const { error } = await supabase
+      .from("portfolio_settings")
+      .upsert(updates, { onConflict: "id" });
+
+    if (error) throw error;
+
+    siteSettingsForm.elements.logo_file.value = "";
+    siteSettingsForm.elements.favicon_file.value = "";
+    setMessage(settingsMessage, "Branding saved. The website will update automatically.");
+    await loadSettings();
+  } catch (error) {
+    setMessage(settingsMessage, error.message, true);
+  }
 });
 
 workForm?.addEventListener("submit", async (event) => {
@@ -802,6 +942,7 @@ async function init() {
   if (data.session) {
     await loadWork();
     await loadRates();
+    await loadSettings();
   }
 }
 

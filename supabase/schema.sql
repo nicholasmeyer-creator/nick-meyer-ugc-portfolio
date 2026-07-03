@@ -28,6 +28,43 @@ create table if not exists public.portfolio_rates (
 
 alter table public.portfolio_rates enable row level security;
 
+create table if not exists public.portfolio_settings (
+  id text primary key default 'site',
+  user_id uuid references auth.users(id) on delete cascade default auth.uid(),
+  logo_text text,
+  logo_path text,
+  logo_url text,
+  favicon_path text,
+  favicon_url text,
+  instagram_handle text,
+  tiktok_handle text,
+  updated_at timestamptz not null default now(),
+  constraint portfolio_settings_singleton check (id = 'site')
+);
+
+alter table public.portfolio_settings
+add column if not exists logo_text text;
+
+alter table public.portfolio_settings
+add column if not exists logo_path text;
+
+alter table public.portfolio_settings
+add column if not exists logo_url text;
+
+alter table public.portfolio_settings
+add column if not exists favicon_path text;
+
+alter table public.portfolio_settings
+add column if not exists favicon_url text;
+
+alter table public.portfolio_settings
+add column if not exists instagram_handle text;
+
+alter table public.portfolio_settings
+add column if not exists tiktok_handle text;
+
+alter table public.portfolio_settings enable row level security;
+
 drop policy if exists "Portfolio work is publicly readable" on public.portfolio_work;
 create policy "Portfolio work is publicly readable"
 on public.portfolio_work
@@ -83,6 +120,27 @@ on public.portfolio_rates
 for delete
 to authenticated
 using ((select auth.uid()) = user_id);
+
+drop policy if exists "Portfolio settings are publicly readable" on public.portfolio_settings;
+create policy "Portfolio settings are publicly readable"
+on public.portfolio_settings
+for select
+using (true);
+
+drop policy if exists "Authenticated users can add own portfolio settings" on public.portfolio_settings;
+create policy "Authenticated users can add own portfolio settings"
+on public.portfolio_settings
+for insert
+to authenticated
+with check ((select auth.uid()) = user_id);
+
+drop policy if exists "Authenticated users can update own portfolio settings" on public.portfolio_settings;
+create policy "Authenticated users can update own portfolio settings"
+on public.portfolio_settings
+for update
+to authenticated
+using ((select auth.uid()) = user_id)
+with check ((select auth.uid()) = user_id);
 
 insert into storage.buckets (id, name, public)
 values ('ugc-media', 'ugc-media', true)
