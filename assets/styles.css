@@ -52,7 +52,7 @@
   }
 
   .ugc-site main {
-    @apply overflow-hidden;
+    @apply overflow-hidden bg-white;
   }
 
   .ugc-header {
@@ -81,7 +81,7 @@
   }
 
   .ugc-hero {
-    @apply grid min-h-[calc(100svh-5rem)] grid-cols-1 items-center gap-10 py-12 md:py-16 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14 lg:py-20;
+    @apply grid min-h-[calc(100svh-5rem)] grid-cols-1 items-center gap-10 bg-white py-12 md:py-16 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14 lg:py-20;
   }
 
   .hero-copy {
@@ -209,13 +209,13 @@
   }
 
   .work-card {
-    @apply relative h-[340px] min-h-0 overflow-hidden rounded-2xl bg-transparent shadow-[0_18px_46px_rgba(16,24,40,0.10)];
+    @apply relative h-[430px] min-h-0 overflow-hidden rounded-2xl bg-transparent shadow-[0_18px_46px_rgba(16,24,40,0.10)];
   }
 
   .photo-strip .work-card,
   .video-strip.carousel-track .video-card {
-    @apply h-[340px] min-h-0 flex-none snap-start md:w-[280px] lg:w-[300px];
-    width: min(74vw, 280px);
+    @apply h-[430px] min-h-0 flex-none snap-start md:w-[320px] lg:w-[340px];
+    width: min(82vw, 320px);
   }
 
   .work-card img {
@@ -273,8 +273,8 @@
   }
 
   .video-card {
-    @apply relative h-[340px] min-h-0 flex-none snap-start overflow-hidden rounded-2xl bg-black shadow-[0_18px_46px_rgba(16,24,40,0.10)] md:w-[280px] lg:w-[300px];
-    width: min(74vw, 280px);
+    @apply relative h-[430px] min-h-0 flex-none snap-start overflow-hidden rounded-2xl bg-black shadow-[0_18px_46px_rgba(16,24,40,0.10)] md:w-[320px] lg:w-[340px];
+    width: min(82vw, 320px);
   }
 
   .video-card video,
@@ -287,9 +287,12 @@
     @apply absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white/90 px-3 py-1.5 text-[0.68rem] font-black uppercase tracking-[0.14em] text-ink backdrop-blur;
   }
 
-  .rates-section,
-  .contact-section {
+  .rates-section {
     @apply grid grid-cols-1 gap-8 lg:grid-cols-[0.76fr_1.24fr] lg:gap-12;
+  }
+
+  .contact-section {
+    @apply mx-auto grid w-[min(calc(100%-2rem),1180px)] grid-cols-1 gap-8 border-t border-line bg-white pt-16 pb-8 md:w-[min(calc(100%-4rem),1180px)] md:pt-20 lg:grid-cols-[0.76fr_1.24fr] lg:gap-12;
   }
 
   .rates-grid {
@@ -318,7 +321,7 @@
   }
 
   .contact-card {
-    @apply grid content-center gap-5;
+    @apply grid content-center gap-5 rounded-2xl border border-line bg-white p-6 shadow-[0_18px_46px_rgba(16,24,40,0.08)] md:p-8;
   }
 
   .contact-card span {
@@ -347,6 +350,11 @@
 
   .admin-link {
     @apply text-sm font-semibold text-slate-500;
+  }
+
+  .footer-name {
+    @apply col-span-full mt-6 block select-none text-center font-black uppercase leading-none tracking-tight text-ink;
+    font-size: clamp(3.8rem, 13vw, 12rem);
   }
 
   .dashboard-page {
