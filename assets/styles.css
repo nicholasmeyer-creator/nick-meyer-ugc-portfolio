@@ -122,7 +122,7 @@
   }
 
   .hero-collage {
-    @apply w-full max-w-[620px] object-contain drop-shadow-[0_30px_70px_rgba(16,24,40,0.16)];
+    @apply w-full max-w-[620px] object-contain;
   }
 
   .ugc-section {
