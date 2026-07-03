@@ -5,13 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Nick Meyer | Portfolio Dashboard</title>
     <meta name="robots" content="noindex">
-    <link rel="stylesheet" href="/assets/styles.css?v=30">
+    <link rel="stylesheet" href="/assets/styles.css?v=31">
   </head>
   <body class="dashboard-page">
     <main class="dashboard-shell">
       <section class="dashboard-panel login-panel" id="loginPanel">
-        <p class="dashboard-label">Dashboard</p>
-        <h1>Portfolio login</h1>
+        <div class="dashboard-topbar">
+          <div>
+            <p class="dashboard-label">Dashboard</p>
+            <h1>Portfolio login</h1>
+          </div>
+          <a class="ghost-button" href="/">View Website</a>
+        </div>
         <p class="dashboard-copy">Sign in with the email and password you create in Supabase Auth.</p>
         <form class="dashboard-form" id="loginForm">
           <label>
@@ -33,7 +38,10 @@
             <p class="dashboard-label">UGC Work</p>
             <h1>Add new work</h1>
           </div>
-          <button class="ghost-button" id="logoutButton" type="button">Log Out</button>
+          <div class="dashboard-nav-actions">
+            <a class="ghost-button" href="/">View Website</a>
+            <button class="ghost-button" id="logoutButton" type="button">Log Out</button>
+          </div>
         </div>
 
         <div class="dashboard-grid">
@@ -90,6 +98,6 @@
       </section>
     </main>
 
-    <script type="module" src="/assets/admin.js?v=30"></script>
+    <script type="module" src="/assets/admin.js?v=31"></script>
   </body>
 </html>

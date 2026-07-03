@@ -42,13 +42,23 @@ function setupCarousels() {
       carousel.classList.toggle("is-scrollable", maxScroll > 4);
     };
 
-    const scrollByPage = (direction) => {
-      const distance = Math.max(track.clientWidth * 0.82, 280);
-      track.scrollBy({ left: distance * direction, behavior: reduceMotion ? "auto" : "smooth" });
+    const scrollByItem = (direction) => {
+      const items = Array.from(track.children);
+      if (!items.length) return;
+
+      const currentLeft = track.scrollLeft;
+      const positions = items.map((item) => item.offsetLeft - track.offsetLeft);
+      const targetIndex = direction > 0
+        ? positions.findIndex((position) => position > currentLeft + 4)
+        : positions.reduce((match, position, index) => (position < currentLeft - 4 ? index : match), -1);
+      const fallbackIndex = direction > 0 ? items.length - 1 : 0;
+      const nextLeft = positions[targetIndex >= 0 ? targetIndex : fallbackIndex];
+
+      track.scrollTo({ left: nextLeft, behavior: reduceMotion ? "auto" : "smooth" });
     };
 
-    previous.addEventListener("click", () => scrollByPage(-1));
-    next.addEventListener("click", () => scrollByPage(1));
+    previous.addEventListener("click", () => scrollByItem(-1));
+    next.addEventListener("click", () => scrollByItem(1));
     track.addEventListener("scroll", updateButtons, { passive: true });
     window.addEventListener("resize", updateButtons);
 

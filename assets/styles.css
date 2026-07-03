@@ -158,11 +158,11 @@
   }
 
   .about-photo-one {
-    @apply left-0 top-20 aspect-[0.78] w-[42%] rotate-[-4deg];
+    @apply right-0 top-6 z-20 aspect-[0.78] w-[58%] rotate-[3deg];
   }
 
   .about-photo-two {
-    @apply right-0 top-6 aspect-[1.08] w-[68%] rotate-[3deg];
+    @apply left-0 top-20 z-10 aspect-[1.08] w-[58%] rotate-[-4deg];
   }
 
   .section-heading {
@@ -430,6 +430,10 @@
     @apply mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-start;
   }
 
+  .dashboard-nav-actions {
+    @apply flex flex-wrap gap-3;
+  }
+
   .upload-form {
     @apply md:grid-cols-2;
   }
@@ -505,11 +509,11 @@
   }
 
   .about-photo-one {
-    @apply w-[48%];
+    @apply w-[62%];
   }
 
   .about-photo-two {
-    @apply w-[68%];
+    @apply w-[62%];
   }
 }
 
