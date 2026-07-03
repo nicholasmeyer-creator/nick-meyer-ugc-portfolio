@@ -90,9 +90,6 @@ function createVideoCard(item) {
   card.className = "phone-frame reveal is-visible";
   const label = item.title || item.brand || "Video";
 
-  const brand = document.createElement("span");
-  brand.textContent = item.brand || "UGC";
-
   const video = document.createElement("video");
   video.src = item.file_url || item.file;
   video.autoplay = true;
@@ -107,10 +104,7 @@ function createVideoCard(item) {
     card.classList.toggle("has-sound", !video.muted);
   });
 
-  const caption = document.createElement("small");
-  caption.textContent = label;
-
-  card.append(video, brand, caption);
+  card.append(video);
   return card;
 }
 

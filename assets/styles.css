@@ -48,7 +48,7 @@
 
 @layer components {
   .ugc-site {
-    @apply overflow-x-hidden bg-[linear-gradient(180deg,#ffffff_0%,#f7fbff_48%,#ffffff_100%)];
+    @apply overflow-x-hidden bg-white;
   }
 
   .ugc-site main {
@@ -190,12 +190,12 @@
   }
 
   .work-carousel {
-    @apply relative min-w-0;
+    @apply relative min-w-0 bg-transparent;
   }
 
   .photo-strip,
   .video-strip.carousel-track {
-    @apply flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pr-10;
+    @apply flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth bg-transparent pr-10;
     scrollbar-width: none;
   }
 
@@ -209,7 +209,7 @@
   }
 
   .work-card {
-    @apply relative min-h-[330px] overflow-hidden rounded-2xl bg-slate-100 shadow-[0_18px_46px_rgba(16,24,40,0.10)];
+    @apply relative min-h-[330px] overflow-hidden rounded-2xl bg-transparent shadow-[0_18px_46px_rgba(16,24,40,0.10)];
   }
 
   .photo-strip .work-card {
@@ -276,35 +276,34 @@
   }
 
   .phone-frame {
-    @apply relative grid min-h-[350px] place-items-center overflow-hidden rounded-[2rem] border-[8px] border-ink bg-black p-6 shadow-[inset_0_0_0_4px_#f2f5f8,0_18px_46px_rgba(16,24,40,0.10)];
+    @apply relative grid place-items-center overflow-visible bg-transparent shadow-[0_18px_46px_rgba(16,24,40,0.10)];
+    aspect-ratio: 214 / 350;
   }
 
   .video-strip.carousel-track .phone-frame {
-    @apply min-h-[350px] flex-none snap-start md:w-[280px] lg:w-[300px];
-    width: min(74vw, 280px);
+    @apply flex-none snap-start md:w-[220px] lg:w-[240px];
+    width: min(62vw, 220px);
   }
 
   .phone-frame::before {
     content: "";
-    @apply absolute left-1/2 top-3 h-3 w-14 -translate-x-1/2 rounded-full bg-ink;
+    @apply pointer-events-none absolute inset-0 z-20 bg-contain bg-center bg-no-repeat;
+    background-image: url("/ui/iphone-cutout.png");
   }
 
   .phone-frame video,
   .phone-frame img {
-    @apply absolute inset-0 h-full w-full bg-black object-contain;
-  }
-
-  .phone-frame span {
-    @apply absolute left-5 top-8 z-10 rounded-full bg-white/90 px-3 py-1.5 text-[0.68rem] font-black uppercase tracking-[0.14em] text-ink backdrop-blur;
-  }
-
-  .phone-frame small {
-    @apply absolute left-5 right-5 top-16 z-10 rounded-lg bg-white/90 px-3 py-2 text-[0.78rem] font-extrabold leading-tight text-ink backdrop-blur;
+    @apply absolute z-10 bg-black object-cover;
+    border-radius: 13%;
+    height: 90.5%;
+    left: 5.7%;
+    top: 4.9%;
+    width: 88.6%;
   }
 
   .phone-frame.has-sound::after {
     content: "Sound on";
-    @apply absolute bottom-5 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white/90 px-3 py-1.5 text-[0.68rem] font-black uppercase tracking-[0.14em] text-ink backdrop-blur;
+    @apply absolute bottom-6 left-1/2 z-30 -translate-x-1/2 rounded-full bg-white/90 px-3 py-1.5 text-[0.68rem] font-black uppercase tracking-[0.14em] text-ink backdrop-blur;
   }
 
   .rates-section,
