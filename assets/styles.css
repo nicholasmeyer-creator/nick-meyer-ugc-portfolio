@@ -239,7 +239,7 @@
   }
 
   .work-card strong {
-    @apply bottom-4 left-4 right-4 rounded-xl bg-white/92 px-4 py-3 text-base font-extrabold leading-tight text-ink shadow-sm backdrop-blur;
+    @apply bottom-4 left-4 right-4 rounded-xl bg-white/92 px-3.5 py-2.5 text-sm font-extrabold leading-tight text-ink shadow-sm backdrop-blur md:text-[0.95rem];
   }
 
   .carousel-arrow {
@@ -329,20 +329,35 @@
   }
 
   .contact-card {
-    @apply grid content-center gap-4;
+    @apply grid content-center gap-5;
   }
 
-  .contact-card a {
-    @apply w-fit text-xl font-bold text-ink md:text-3xl;
+  .contact-card span {
+    @apply text-xs font-black uppercase tracking-[0.2em] text-skydeep;
   }
 
-  .contact-card a:not(.admin-link)::after {
-    content: "";
-    @apply mt-2 block h-0.5 bg-skybrand;
+  .contact-email {
+    @apply w-fit text-2xl font-black tracking-tight text-ink md:text-4xl;
+  }
+
+  .contact-prompts {
+    @apply grid gap-3 md:grid-cols-3;
+  }
+
+  .contact-prompts p {
+    @apply rounded-xl border border-line bg-skybrand/10 px-4 py-3 text-sm font-bold leading-snug text-ink;
+  }
+
+  .contact-links {
+    @apply flex flex-wrap items-center gap-4 pt-1;
+  }
+
+  .contact-links a {
+    @apply text-base font-extrabold text-ink;
   }
 
   .admin-link {
-    @apply mt-5 text-sm font-semibold text-slate-500;
+    @apply text-sm font-semibold text-slate-500;
   }
 
   .dashboard-page {
