@@ -15,12 +15,12 @@ if (!reduceMotion && "IntersectionObserver" in window) {
     { threshold: 0.18 }
   );
 
-  document.querySelectorAll(".ugc-section, .work-card, .phone-frame").forEach((element) => {
+  document.querySelectorAll(".ugc-section, .work-card, .video-card").forEach((element) => {
     element.classList.add("reveal");
     observer.observe(element);
   });
 } else {
-  document.querySelectorAll(".ugc-section, .work-card, .phone-frame").forEach((element) => {
+  document.querySelectorAll(".ugc-section, .work-card, .video-card").forEach((element) => {
     element.classList.add("is-visible");
   });
 }
@@ -87,7 +87,7 @@ function createPhotoCard(item) {
 
 function createVideoCard(item) {
   const card = document.createElement("article");
-  card.className = "phone-frame reveal is-visible";
+  card.className = "video-card reveal is-visible";
   const label = item.title || item.brand || "Video";
 
   const video = document.createElement("video");

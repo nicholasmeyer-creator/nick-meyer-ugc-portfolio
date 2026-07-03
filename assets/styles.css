@@ -275,35 +275,19 @@
     @apply pointer-events-none opacity-0;
   }
 
-  .phone-frame {
-    @apply relative grid place-items-center overflow-visible bg-transparent shadow-[0_18px_46px_rgba(16,24,40,0.10)];
-    aspect-ratio: 214 / 350;
+  .video-card {
+    @apply relative min-h-[340px] flex-none snap-start overflow-hidden rounded-2xl bg-black shadow-[0_18px_46px_rgba(16,24,40,0.10)] md:w-[280px] lg:w-[300px];
+    width: min(74vw, 280px);
   }
 
-  .video-strip.carousel-track .phone-frame {
-    @apply flex-none snap-start md:w-[220px] lg:w-[240px];
-    width: min(62vw, 220px);
+  .video-card video,
+  .video-card img {
+    @apply absolute inset-0 h-full w-full bg-black object-contain;
   }
 
-  .phone-frame::before {
-    content: "";
-    @apply pointer-events-none absolute inset-0 z-20 bg-contain bg-center bg-no-repeat;
-    background-image: url("/ui/iphone-cutout.png");
-  }
-
-  .phone-frame video,
-  .phone-frame img {
-    @apply absolute z-10 bg-black object-cover;
-    border-radius: 13%;
-    height: 90.5%;
-    left: 5.7%;
-    top: 4.9%;
-    width: 88.6%;
-  }
-
-  .phone-frame.has-sound::after {
+  .video-card.has-sound::after {
     content: "Sound on";
-    @apply absolute bottom-6 left-1/2 z-30 -translate-x-1/2 rounded-full bg-white/90 px-3 py-1.5 text-[0.68rem] font-black uppercase tracking-[0.14em] text-ink backdrop-blur;
+    @apply absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white/90 px-3 py-1.5 text-[0.68rem] font-black uppercase tracking-[0.14em] text-ink backdrop-blur;
   }
 
   .rates-section,
