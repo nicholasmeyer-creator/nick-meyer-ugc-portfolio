@@ -28,6 +28,34 @@ if (!reduceMotion && "IntersectionObserver" in window) {
 const photoWork = document.querySelector("#photoWork");
 const videoWork = document.querySelector("#videoWork");
 
+function setupCarousels() {
+  document.querySelectorAll("[data-carousel]").forEach((carousel) => {
+    const track = carousel.querySelector(".carousel-track");
+    const previous = carousel.querySelector("[data-carousel-prev]");
+    const next = carousel.querySelector("[data-carousel-next]");
+    if (!track || !previous || !next) return;
+
+    const updateButtons = () => {
+      const maxScroll = track.scrollWidth - track.clientWidth - 4;
+      previous.disabled = track.scrollLeft <= 4;
+      next.disabled = track.scrollLeft >= maxScroll;
+      carousel.classList.toggle("is-scrollable", maxScroll > 4);
+    };
+
+    const scrollByPage = (direction) => {
+      const distance = Math.max(track.clientWidth * 0.82, 280);
+      track.scrollBy({ left: distance * direction, behavior: reduceMotion ? "auto" : "smooth" });
+    };
+
+    previous.addEventListener("click", () => scrollByPage(-1));
+    next.addEventListener("click", () => scrollByPage(1));
+    track.addEventListener("scroll", updateButtons, { passive: true });
+    window.addEventListener("resize", updateButtons);
+
+    updateButtons();
+  });
+}
+
 function createPhotoCard(item) {
   const card = document.createElement("article");
   card.className = "work-card reveal is-visible";
@@ -104,4 +132,4 @@ async function loadUploadedWork() {
   }
 }
 
-loadUploadedWork();
+loadUploadedWork().finally(setupCarousels);
