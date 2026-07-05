@@ -48,6 +48,7 @@
           <button class="is-active" type="button" role="tab" aria-selected="true" data-admin-tab="new-work">Add work</button>
           <button type="button" role="tab" aria-selected="false" data-admin-tab="content">Content</button>
           <button type="button" role="tab" aria-selected="false" data-admin-tab="rates">Rates</button>
+          <button type="button" role="tab" aria-selected="false" data-admin-tab="enquiries">Enquiries</button>
         </div>
 
         <div class="dashboard-tab-panel is-active" id="new-work" role="tabpanel">
@@ -174,6 +175,10 @@
           <p class="form-message" id="settingsMessage" role="status"></p>
         </form>
 
+        <div class="dashboard-list" id="workList" aria-live="polite"></div>
+        </div>
+
+        <div class="dashboard-tab-panel" id="enquiries" role="tabpanel">
         <section class="dashboard-card enquiry-card">
           <div>
             <h2>Enquiries</h2>
@@ -182,12 +187,10 @@
           <p class="form-message" id="enquiryMessage" role="status"></p>
           <div class="dashboard-list enquiry-list" id="enquiryList" aria-live="polite"></div>
         </section>
-
-        <div class="dashboard-list" id="workList" aria-live="polite"></div>
         </div>
       </section>
     </main>
 
-    <script type="module" src="/assets/admin.js?v=45"></script>
+    <script type="module" src="/assets/admin.js?v=46"></script>
   </body>
 </html>
