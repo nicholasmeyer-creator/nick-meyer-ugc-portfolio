@@ -29,6 +29,7 @@ const photoWork = document.querySelector("#photoWork");
 const videoWork = document.querySelector("#videoWork");
 const ratesGrid = document.querySelector("#ratesGrid");
 const siteLogo = document.querySelector(".ugc-logo");
+const briefForm = document.querySelector("#briefForm");
 
 function cleanHandle(handle) {
   return String(handle || "").trim().replace(/^@+/, "");
@@ -81,6 +82,32 @@ function applySettings(settings = {}) {
 
   setFavicon(settings.favicon_url);
   updateSocialLinks(settings);
+}
+
+if (briefForm) {
+  briefForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const data = new FormData(briefForm);
+    const name = String(data.get("name") || "").trim();
+    const brand = String(data.get("brand") || "").trim();
+    const email = String(data.get("email") || "").trim();
+    const project = String(data.get("project") || "").trim();
+    const brief = String(data.get("brief") || "").trim();
+
+    const subject = `UGC brief${brand ? ` for ${brand}` : ""}`;
+    const body = [
+      `Name: ${name}`,
+      `Brand: ${brand || "Not added"}`,
+      `Email: ${email}`,
+      `Project type: ${project}`,
+      "",
+      "Brief:",
+      brief
+    ].join("\n");
+
+    window.location.href = `mailto:hey@nicholasmeyer.co.za?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  });
 }
 
 function setupCarousels() {

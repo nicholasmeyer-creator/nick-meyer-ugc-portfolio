@@ -6,7 +6,7 @@
     <title>Nick Meyer | UGC Portfolio</title>
     <meta name="description" content="UGC portfolio for Nick Meyer, a lifestyle, travel and food creator working with hospitality, travel and lifestyle brands.">
     <link rel="preload" as="image" href="/assets/images/ugc/nick-meyer-hero-collage.png">
-    <link rel="stylesheet" href="/assets/styles.css?v=47">
+    <link rel="stylesheet" href="/assets/styles.css?v=48">
   </head>
   <body class="ugc-site">
     <header class="ugc-header">
@@ -154,6 +154,35 @@
             <p>Send through the brand, campaign goal, deliverables, usage needs and deadline. I will come back with availability, creative direction and a tailored quote.</p>
           </div>
 
+          <form class="footer-contact-form" id="briefForm">
+            <label>
+              Name
+              <input type="text" name="name" autocomplete="name" placeholder="Your name" required>
+            </label>
+            <label>
+              Brand
+              <input type="text" name="brand" autocomplete="organization" placeholder="Brand or business">
+            </label>
+            <label>
+              Email
+              <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+            </label>
+            <label>
+              Project
+              <select name="project">
+                <option value="UGC video">UGC video</option>
+                <option value="Photography">Photography</option>
+                <option value="Photo and video">Photo and video</option>
+                <option value="Travel or hospitality campaign">Travel or hospitality campaign</option>
+              </select>
+            </label>
+            <label class="form-wide">
+              Brief
+              <textarea name="brief" rows="4" placeholder="Tell me what you need, the timeline and where the content will be used." required></textarea>
+            </label>
+            <button type="submit">Send brief</button>
+          </form>
+
           <div class="footer-contact-row" aria-label="Contact details">
             <div class="footer-detail">
               <span>Email</span>
@@ -189,6 +218,6 @@
       </footer>
     </main>
 
-    <script type="module" src="/assets/site.js?v=47"></script>
+    <script type="module" src="/assets/site.js?v=48"></script>
   </body>
 </html>

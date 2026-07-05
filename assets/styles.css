@@ -339,6 +339,32 @@
     @apply mb-0 max-w-2xl text-base leading-7 text-slate-700 md:justify-self-end;
   }
 
+  .footer-contact-form {
+    @apply mt-10 grid gap-4 rounded-2xl border border-white/70 bg-white/72 p-5 shadow-[0_18px_50px_rgba(47,120,180,0.12)] backdrop-blur md:grid-cols-2 md:p-6 lg:grid-cols-4;
+  }
+
+  .footer-contact-form label {
+    @apply grid gap-2 text-[0.68rem] font-black uppercase tracking-[0.16em] text-ink;
+  }
+
+  .footer-contact-form input,
+  .footer-contact-form select,
+  .footer-contact-form textarea {
+    @apply w-full rounded-xl border border-skydeep/15 bg-white px-4 py-3 text-sm font-semibold normal-case tracking-normal text-ink outline-none transition placeholder:font-medium placeholder:text-slate-400 focus:border-skydeep focus:ring-4 focus:ring-skybrand/20;
+  }
+
+  .footer-contact-form textarea {
+    @apply resize-y leading-6;
+  }
+
+  .footer-contact-form .form-wide {
+    @apply md:col-span-2 lg:col-span-3;
+  }
+
+  .footer-contact-form button {
+    @apply h-fit self-end rounded-xl bg-ink px-6 py-3 text-sm font-black text-white transition hover:bg-skydeep;
+  }
+
   .footer-contact-row {
     @apply mt-10 grid gap-6 border-y border-ink/20 py-8 md:grid-cols-3 md:gap-8;
   }
