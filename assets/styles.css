@@ -295,16 +295,11 @@
     @apply grid grid-cols-1 gap-8 lg:grid-cols-[0.76fr_1.24fr] lg:gap-12;
   }
 
-  .contact-section {
-    @apply mx-auto grid w-[min(calc(100%-2rem),1180px)] grid-cols-1 gap-8 border-t border-line bg-white pt-16 pb-8 md:w-[min(calc(100%-4rem),1180px)] md:pt-20 lg:grid-cols-[0.76fr_1.24fr] lg:gap-12;
-  }
-
   .rates-grid {
     @apply grid grid-cols-1 gap-5 md:grid-cols-3;
   }
 
-  .rates-grid article,
-  .contact-card {
+  .rates-grid article {
     @apply rounded-2xl border border-line bg-white p-6 shadow-[0_18px_46px_rgba(16,24,40,0.08)] md:p-8;
   }
 
@@ -324,41 +319,74 @@
     @apply text-sm leading-6 text-slate-600;
   }
 
-  .contact-card {
-    @apply grid content-center gap-5 rounded-2xl border border-line bg-white p-6 shadow-[0_18px_46px_rgba(16,24,40,0.08)] md:p-8;
+  .contact-section {
+    @apply mt-12 w-full bg-[linear-gradient(180deg,#eef7ff_0%,#dff1ff_100%)] px-5 py-12 md:px-10 md:py-16 lg:px-14;
   }
 
-  .contact-card span {
-    @apply text-xs font-black uppercase tracking-[0.2em] text-skydeep;
+  .footer-inner {
+    @apply mx-auto w-full max-w-[1240px];
   }
 
-  .contact-email {
-    @apply w-fit text-2xl font-black tracking-tight text-ink md:text-4xl;
+  .footer-cta {
+    @apply grid gap-5 md:grid-cols-[0.9fr_1.1fr] md:items-end;
   }
 
-  .contact-prompts {
-    @apply grid gap-3 md:grid-cols-3;
+  .footer-cta h2 {
+    @apply mb-0 max-w-3xl text-3xl font-black tracking-tight text-ink md:text-5xl;
   }
 
-  .contact-prompts p {
-    @apply rounded-xl border border-line bg-skybrand/10 px-4 py-3 text-sm font-bold leading-snug text-ink;
+  .footer-cta p:not(.section-label) {
+    @apply mb-0 max-w-2xl text-base leading-7 text-slate-700 md:justify-self-end;
   }
 
-  .contact-links {
-    @apply flex flex-wrap items-center gap-4 pt-1;
+  .footer-contact-row {
+    @apply mt-10 grid gap-6 border-y border-ink/20 py-8 md:grid-cols-3 md:gap-8;
   }
 
-  .contact-links a {
-    @apply text-base font-extrabold text-ink;
+  .footer-detail {
+    @apply grid gap-2;
+  }
+
+  .footer-detail span {
+    @apply text-sm font-medium text-slate-700;
+  }
+
+  .footer-detail a,
+  .footer-detail strong {
+    @apply text-xl font-extrabold tracking-tight text-ink md:text-2xl;
+  }
+
+  .footer-socials {
+    @apply flex flex-wrap items-center gap-3;
+  }
+
+  .footer-socials a {
+    @apply rounded-full border border-ink/20 bg-white/70 px-3 py-1.5 text-sm font-extrabold text-ink transition hover:bg-ink hover:text-white;
+  }
+
+  .footer-bottom {
+    @apply flex flex-col gap-5 py-8 md:flex-row md:items-center md:justify-between;
+  }
+
+  .footer-bottom p {
+    @apply mb-0 text-sm font-medium text-slate-700;
+  }
+
+  .footer-nav {
+    @apply flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-bold text-ink;
+  }
+
+  .footer-nav a {
+    @apply underline-offset-4 hover:underline;
   }
 
   .admin-link {
-    @apply text-sm font-semibold text-slate-500;
+    @apply text-sm font-semibold text-slate-600;
   }
 
   .footer-name {
-    @apply col-span-full mt-6 block select-none text-center font-black uppercase leading-none tracking-tight text-ink;
-    font-size: clamp(3.8rem, 13vw, 12rem);
+    @apply block select-none text-center font-black uppercase leading-none tracking-tight text-skydeep/25;
+    font-size: clamp(4.4rem, 16vw, 14rem);
   }
 
   .dashboard-page {
