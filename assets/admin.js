@@ -15,6 +15,8 @@ const settingsMessage = document.querySelector("#settingsMessage");
 const logoutButton = document.querySelector("#logoutButton");
 const workList = document.querySelector("#workList");
 const rateList = document.querySelector("#rateList");
+const enquiryList = document.querySelector("#enquiryList");
+const enquiryMessage = document.querySelector("#enquiryMessage");
 const logoPreview = document.querySelector("#logoPreview");
 const faviconPreview = document.querySelector("#faviconPreview");
 const adminTabs = document.querySelectorAll("[data-admin-tab]");
@@ -109,6 +111,7 @@ const starterRates = [
 let currentWork = [];
 let currentRates = [];
 let currentSettings = null;
+let currentEnquiries = [];
 
 function setMessage(element, message, isError = false) {
   if (!element) return;
@@ -598,6 +601,108 @@ async function loadSettings() {
   renderSettingsPreview(currentSettings);
 }
 
+function renderEnquiryItem(item) {
+  const article = document.createElement("article");
+  article.className = "dashboard-enquiry-item";
+
+  const date = item.created_at
+    ? new Intl.DateTimeFormat("en-ZA", { dateStyle: "medium", timeStyle: "short" }).format(new Date(item.created_at))
+    : "";
+
+  const emailLink = document.createElement("a");
+  emailLink.href = `mailto:${item.email}`;
+  emailLink.textContent = item.email;
+
+  const title = document.createElement("strong");
+  title.textContent = `${item.name}${item.brand ? ` from ${item.brand}` : ""}`;
+
+  const meta = document.createElement("span");
+  meta.textContent = [item.project || "UGC brief", date].filter(Boolean).join(" | ");
+
+  const brief = document.createElement("p");
+  brief.textContent = item.brief || "No brief added.";
+
+  const actions = document.createElement("div");
+  actions.className = "dashboard-actions";
+
+  const readButton = document.createElement("button");
+  readButton.type = "button";
+  readButton.textContent = item.is_read ? "Mark Unread" : "Mark Read";
+  readButton.addEventListener("click", () => toggleEnquiryRead(item));
+
+  const deleteButton = document.createElement("button");
+  deleteButton.type = "button";
+  deleteButton.textContent = "Delete";
+  deleteButton.addEventListener("click", () => deleteEnquiry(item));
+
+  actions.append(readButton, deleteButton);
+  article.classList.toggle("is-read", Boolean(item.is_read));
+  article.append(title, meta, emailLink, brief, actions);
+  return article;
+}
+
+function renderEnquiries() {
+  if (!enquiryList) return;
+  enquiryList.innerHTML = "";
+
+  if (!currentEnquiries.length) {
+    enquiryList.innerHTML = "<p>No enquiries yet.</p>";
+    return;
+  }
+
+  currentEnquiries.forEach((item) => enquiryList.appendChild(renderEnquiryItem(item)));
+}
+
+async function loadEnquiries() {
+  if (!isSupabaseConfigured || !enquiryList) return;
+
+  const { data, error } = await supabase
+    .from("contact_submissions")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    enquiryList.innerHTML = "";
+    setMessage(enquiryMessage, `${error.message}. Run the latest supabase/schema.sql to enable enquiries.`, true);
+    return;
+  }
+
+  currentEnquiries = data || [];
+  setMessage(enquiryMessage, "");
+  renderEnquiries();
+}
+
+async function toggleEnquiryRead(item) {
+  setMessage(enquiryMessage, "Saving enquiry...");
+  const { error } = await supabase
+    .from("contact_submissions")
+    .update({ is_read: !item.is_read })
+    .eq("id", item.id);
+
+  if (error) {
+    setMessage(enquiryMessage, error.message, true);
+    return;
+  }
+
+  setMessage(enquiryMessage, "Enquiry updated.");
+  await loadEnquiries();
+}
+
+async function deleteEnquiry(item) {
+  if (!confirm(`Delete enquiry from "${item.name}"?`)) return;
+
+  setMessage(enquiryMessage, "Deleting enquiry...");
+  const { error } = await supabase.from("contact_submissions").delete().eq("id", item.id);
+
+  if (error) {
+    setMessage(enquiryMessage, error.message, true);
+    return;
+  }
+
+  setMessage(enquiryMessage, "Enquiry deleted.");
+  await loadEnquiries();
+}
+
 async function deleteWork(item) {
   if (!confirm(`Delete "${item.title}" from the portfolio?`)) return;
 
@@ -750,6 +855,7 @@ loginForm?.addEventListener("submit", async (event) => {
   await loadWork();
   await loadRates();
   await loadSettings();
+  await loadEnquiries();
 });
 
 logoutButton?.addEventListener("click", async () => {

@@ -680,6 +680,50 @@
     @apply rounded-2xl border border-line bg-white p-4;
   }
 
+  .enquiry-card {
+    @apply mt-8 grid gap-5;
+  }
+
+  .enquiry-card > div:first-child {
+    @apply grid gap-2 md:grid-cols-[0.7fr_1fr] md:items-end;
+  }
+
+  .enquiry-card h2 {
+    @apply text-2xl font-black text-ink;
+  }
+
+  .enquiry-card p {
+    @apply text-base leading-7 text-slate-600;
+  }
+
+  .enquiry-list {
+    @apply mt-0 gap-4;
+  }
+
+  .dashboard-enquiry-item {
+    @apply grid gap-2 rounded-2xl border border-line bg-white p-4;
+  }
+
+  .dashboard-enquiry-item.is-read {
+    @apply opacity-70;
+  }
+
+  .dashboard-enquiry-item strong {
+    @apply text-lg font-extrabold text-ink;
+  }
+
+  .dashboard-enquiry-item span {
+    @apply text-xs font-black uppercase tracking-[0.18em] text-skydeep;
+  }
+
+  .dashboard-enquiry-item a {
+    @apply text-sm font-bold text-slate-700 underline decoration-skybrand/40 underline-offset-4;
+  }
+
+  .dashboard-enquiry-item p {
+    @apply text-sm leading-6 text-slate-600;
+  }
+
   .is-hidden {
     @apply hidden;
   }

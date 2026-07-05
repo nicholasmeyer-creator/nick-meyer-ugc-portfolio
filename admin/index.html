@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Nick Meyer | Portfolio Dashboard</title>
     <meta name="robots" content="noindex">
-    <link rel="stylesheet" href="/assets/styles.css?v=44">
+    <link rel="stylesheet" href="/assets/styles.css?v=45">
   </head>
   <body class="dashboard-page">
     <main class="dashboard-shell">
@@ -174,11 +174,20 @@
           <p class="form-message" id="settingsMessage" role="status"></p>
         </form>
 
+        <section class="dashboard-card enquiry-card">
+          <div>
+            <h2>Enquiries</h2>
+            <p>Briefs submitted through the contact form on the website.</p>
+          </div>
+          <p class="form-message" id="enquiryMessage" role="status"></p>
+          <div class="dashboard-list enquiry-list" id="enquiryList" aria-live="polite"></div>
+        </section>
+
         <div class="dashboard-list" id="workList" aria-live="polite"></div>
         </div>
       </section>
     </main>
 
-    <script type="module" src="/assets/admin.js?v=44"></script>
+    <script type="module" src="/assets/admin.js?v=45"></script>
   </body>
 </html>

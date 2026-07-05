@@ -65,6 +65,19 @@ add column if not exists tiktok_handle text;
 
 alter table public.portfolio_settings enable row level security;
 
+create table if not exists public.contact_submissions (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  brand text,
+  email text not null,
+  project text,
+  brief text not null,
+  is_read boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+alter table public.contact_submissions enable row level security;
+
 drop policy if exists "Portfolio work is publicly readable" on public.portfolio_work;
 create policy "Portfolio work is publicly readable"
 on public.portfolio_work
@@ -141,6 +154,35 @@ for update
 to authenticated
 using ((select auth.uid()) = user_id)
 with check ((select auth.uid()) = user_id);
+
+drop policy if exists "Anyone can submit contact enquiries" on public.contact_submissions;
+create policy "Anyone can submit contact enquiries"
+on public.contact_submissions
+for insert
+to anon, authenticated
+with check (true);
+
+drop policy if exists "Authenticated users can read contact enquiries" on public.contact_submissions;
+create policy "Authenticated users can read contact enquiries"
+on public.contact_submissions
+for select
+to authenticated
+using (true);
+
+drop policy if exists "Authenticated users can update contact enquiries" on public.contact_submissions;
+create policy "Authenticated users can update contact enquiries"
+on public.contact_submissions
+for update
+to authenticated
+using (true)
+with check (true);
+
+drop policy if exists "Authenticated users can delete contact enquiries" on public.contact_submissions;
+create policy "Authenticated users can delete contact enquiries"
+on public.contact_submissions
+for delete
+to authenticated
+using (true);
 
 insert into storage.buckets (id, name, public)
 values ('ugc-media', 'ugc-media', true)

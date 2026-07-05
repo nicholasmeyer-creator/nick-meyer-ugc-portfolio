@@ -30,6 +30,7 @@ const videoWork = document.querySelector("#videoWork");
 const ratesGrid = document.querySelector("#ratesGrid");
 const siteLogo = document.querySelector(".ugc-logo");
 const briefForm = document.querySelector("#briefForm");
+const briefMessage = document.querySelector("#briefMessage");
 
 function cleanHandle(handle) {
   return String(handle || "").trim().replace(/^@+/, "");
@@ -85,7 +86,7 @@ function applySettings(settings = {}) {
 }
 
 if (briefForm) {
-  briefForm.addEventListener("submit", (event) => {
+  briefForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const data = new FormData(briefForm);
@@ -95,18 +96,39 @@ if (briefForm) {
     const project = String(data.get("project") || "").trim();
     const brief = String(data.get("brief") || "").trim();
 
-    const subject = `UGC brief${brand ? ` for ${brand}` : ""}`;
-    const body = [
-      `Name: ${name}`,
-      `Brand: ${brand || "Not added"}`,
-      `Email: ${email}`,
-      `Project type: ${project}`,
-      "",
-      "Brief:",
-      brief
-    ].join("\n");
+    if (!name || !email || !brief) {
+      briefMessage.textContent = "Please add your name, email and brief.";
+      briefMessage.classList.add("is-error");
+      return;
+    }
 
-    window.location.href = `mailto:hey@nicholasmeyer.co.za?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const submission = { name, brand, email, project, brief };
+    briefMessage.textContent = "Sending your brief...";
+    briefMessage.classList.remove("is-error");
+
+    try {
+      if (isSupabaseConfigured) {
+        const { error } = await supabase.from("contact_submissions").insert(submission);
+        if (error) console.warn("Contact submission was not saved.", error);
+      }
+
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submission)
+      });
+
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        throw new Error(result.error || "The email could not be sent right now.");
+      }
+
+      briefForm.reset();
+      briefMessage.textContent = "Thanks, your brief has been sent.";
+    } catch (error) {
+      briefMessage.textContent = `${error.message} Please email hey@nicholasmeyer.co.za if this keeps happening.`;
+      briefMessage.classList.add("is-error");
+    }
   });
 }
 
