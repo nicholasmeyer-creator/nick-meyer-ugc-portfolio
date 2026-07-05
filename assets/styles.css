@@ -385,8 +385,8 @@
   }
 
   .footer-name {
-    @apply block select-none text-center font-black uppercase leading-none tracking-tight text-skydeep/25;
-    font-size: clamp(4.4rem, 16vw, 14rem);
+    @apply block select-none whitespace-nowrap text-center font-black uppercase leading-none tracking-tight text-skydeep/25;
+    font-size: clamp(3rem, 13.5vw, 13rem);
   }
 
   .dashboard-page {
