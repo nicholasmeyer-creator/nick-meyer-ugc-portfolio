@@ -66,10 +66,12 @@ export default async function handler(request, response) {
     return response.status(400).json({ error: "Name, email and brief are required." });
   }
 
-  try {
-    await saveSubmission(submission);
-  } catch (error) {
-    return response.status(500).json({ error: error.message });
+  if (body.save !== false) {
+    try {
+      await saveSubmission(submission);
+    } catch (error) {
+      return response.status(500).json({ error: error.message });
+    }
   }
 
   const subject = `UGC brief${submission.brand ? ` for ${submission.brand}` : ""}`;

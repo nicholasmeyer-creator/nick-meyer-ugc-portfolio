@@ -107,15 +107,25 @@ if (briefForm) {
     briefMessage.classList.remove("is-error");
 
     try {
+      if (!isSupabaseConfigured) {
+        throw new Error("Enquiry saving is not configured yet.");
+      }
+
+      const { error: saveError } = await supabase.from("contact_submissions").insert(submission);
+
+      if (saveError) {
+        throw new Error(saveError.message || "Your brief could not be saved right now.");
+      }
+
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(submission)
+        body: JSON.stringify({ ...submission, save: false })
       });
 
       if (!response.ok) {
         const result = await response.json().catch(() => ({}));
-        throw new Error(result.error || "The email could not be sent right now.");
+        console.warn("Contact email was not sent.", result.error || response.statusText);
       }
 
       briefForm.reset();
