@@ -107,11 +107,6 @@ if (briefForm) {
     briefMessage.classList.remove("is-error");
 
     try {
-      if (isSupabaseConfigured) {
-        const { error } = await supabase.from("contact_submissions").insert(submission);
-        if (error) console.warn("Contact submission was not saved.", error);
-      }
-
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -743,7 +743,19 @@
   }
 
   .ugc-nav {
-    @apply w-full pb-1;
+    @apply flex-wrap gap-x-2 gap-y-1 overflow-visible pb-1 text-[0.64rem] tracking-[0.12em];
+  }
+
+  .ugc-nav a {
+    @apply px-1.5 py-1.5;
+  }
+
+  .dashboard-tabs {
+    @apply grid grid-cols-4 gap-1 rounded-xl p-1;
+  }
+
+  .dashboard-tabs button {
+    @apply min-w-0 rounded-lg px-1.5 py-2 text-[0.62rem] tracking-[0.08em];
   }
 
   .hero-collage {
