@@ -864,7 +864,12 @@ logoutButton?.addEventListener("click", async () => {
 });
 
 adminTabs.forEach((tab) => {
-  tab.addEventListener("click", () => switchAdminTab(tab.dataset.adminTab));
+  tab.addEventListener("click", async () => {
+    switchAdminTab(tab.dataset.adminTab);
+    if (tab.dataset.adminTab === "enquiries") {
+      await loadEnquiries();
+    }
+  });
 });
 
 passwordForm?.addEventListener("submit", async (event) => {
@@ -1072,6 +1077,7 @@ async function init() {
     await loadWork();
     await loadRates();
     await loadSettings();
+    await loadEnquiries();
   }
 }
 
