@@ -67,6 +67,10 @@
     @apply h-auto w-[150px] object-contain;
   }
 
+  .ugc-menu-toggle {
+    @apply hidden;
+  }
+
   .ugc-nav {
     @apply flex items-center gap-1 overflow-x-auto text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-slate-700 md:gap-2 md:text-xs;
   }
@@ -739,15 +743,51 @@
 
 @media (max-width: 760px) {
   .ugc-header {
-    @apply static flex-col items-start gap-3;
+    @apply static grid min-h-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-4;
+  }
+
+  .ugc-logo {
+    @apply min-w-0 text-base;
+  }
+
+  .ugc-logo img {
+    @apply w-[126px];
+  }
+
+  .ugc-menu-toggle {
+    @apply relative grid h-11 w-11 cursor-pointer place-items-center rounded-full border border-line bg-white shadow-sm transition hover:border-skybrand;
+  }
+
+  .ugc-menu-toggle span {
+    @apply absolute h-0.5 w-5 rounded-full bg-ink transition;
+  }
+
+  .ugc-menu-toggle span:first-child {
+    @apply -translate-y-1.5;
+  }
+
+  .ugc-menu-toggle span:last-child {
+    @apply translate-y-1.5;
+  }
+
+  .ugc-menu-toggle[aria-expanded="true"] span:first-child {
+    @apply translate-y-0 rotate-45;
+  }
+
+  .ugc-menu-toggle[aria-expanded="true"] span:last-child {
+    @apply translate-y-0 -rotate-45;
   }
 
   .ugc-nav {
-    @apply grid w-full grid-cols-5 gap-1 overflow-visible pb-1 text-[0.58rem] tracking-[0.06em];
+    @apply col-span-2 hidden w-full grid-cols-1 gap-1 overflow-visible rounded-xl border border-line bg-white p-2 text-[0.72rem] tracking-[0.12em] shadow-[0_14px_34px_rgba(16,24,40,0.10)];
+  }
+
+  .ugc-nav.is-open {
+    @apply grid;
   }
 
   .ugc-nav a {
-    @apply min-w-0 px-0.5 py-1.5 text-center;
+    @apply min-w-0 rounded-lg px-3 py-2.5 text-center;
   }
 
   .dashboard-shell {
@@ -790,8 +830,8 @@
 }
 
 @media (max-width: 360px) {
-  .ugc-nav {
-    @apply gap-0 text-[0.52rem] tracking-normal;
+  .ugc-logo img {
+    @apply w-[112px];
   }
 }
 

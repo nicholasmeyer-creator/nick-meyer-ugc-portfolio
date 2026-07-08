@@ -29,6 +29,8 @@ const photoWork = document.querySelector("#photoWork");
 const videoWork = document.querySelector("#videoWork");
 const ratesGrid = document.querySelector("#ratesGrid");
 const siteLogo = document.querySelector(".ugc-logo");
+const menuToggle = document.querySelector(".ugc-menu-toggle");
+const primaryNav = document.querySelector("#primaryNav");
 const briefForm = document.querySelector("#briefForm");
 const briefMessage = document.querySelector("#briefMessage");
 
@@ -45,6 +47,26 @@ function setFavicon(url) {
     document.head.appendChild(icon);
   }
   icon.href = url;
+}
+
+function closeMenu() {
+  if (!menuToggle || !primaryNav) return;
+  menuToggle.setAttribute("aria-expanded", "false");
+  menuToggle.setAttribute("aria-label", "Open navigation menu");
+  primaryNav.classList.remove("is-open");
+}
+
+if (menuToggle && primaryNav) {
+  menuToggle.addEventListener("click", () => {
+    const isOpen = menuToggle.getAttribute("aria-expanded") === "true";
+    menuToggle.setAttribute("aria-expanded", String(!isOpen));
+    menuToggle.setAttribute("aria-label", isOpen ? "Open navigation menu" : "Close navigation menu");
+    primaryNav.classList.toggle("is-open", !isOpen);
+  });
+
+  primaryNav.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", closeMenu);
+  });
 }
 
 function updateSocialLinks(settings = {}) {
