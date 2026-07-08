@@ -626,10 +626,6 @@
     @apply grid gap-2;
   }
 
-  .dashboard-work-item .dashboard-actions {
-    @apply mt-2 flex flex-wrap gap-2;
-  }
-
   .dashboard-work-item button {
     @apply px-4 py-2.5 text-xs;
   }
@@ -666,6 +662,18 @@
 
   .dashboard-edit-form textarea {
     @apply resize-y;
+  }
+
+  .dashboard-actions {
+    @apply mt-2 flex flex-wrap items-center gap-2;
+  }
+
+  .dashboard-actions button {
+    @apply w-fit cursor-pointer rounded-full border border-ink bg-white px-4 py-2.5 text-xs font-bold text-ink transition hover:bg-ink hover:text-white;
+  }
+
+  .dashboard-actions button.is-danger {
+    @apply border-red-200 text-red-700 hover:border-red-700 hover:bg-red-700 hover:text-white;
   }
 
   .dashboard-edit-form .edit-wide {

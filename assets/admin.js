@@ -446,7 +446,7 @@ function renderRateItem(item) {
     </label>
     <div class="dashboard-actions edit-wide">
       <button type="submit">Save Rate</button>
-      <button type="button" data-delete-rate>Delete</button>
+      <button class="is-danger" type="button" data-delete-rate>Delete</button>
     </div>
   `;
 
@@ -632,6 +632,7 @@ function renderEnquiryItem(item) {
 
   const deleteButton = document.createElement("button");
   deleteButton.type = "button";
+  deleteButton.className = "is-danger";
   deleteButton.textContent = "Delete";
   deleteButton.addEventListener("click", () => deleteEnquiry(item));
 
